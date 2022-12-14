@@ -9,8 +9,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def main():
-    logger.info(database.query_game_id("Frostbite"))
-    database.close()
+    connection = database.Connection(memory = True)
+    logger.info(connection.query_game_id("Frostbite"))
+    connection.close()
 
 if __name__ == "__main__":
     main()

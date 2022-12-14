@@ -2,43 +2,55 @@ import logging
 import sqlite3
 
 logger = logging.getLogger(__name__)
-database_name = "recap"
 
-try:
-    # Connect without implicitly creating a new database
-    # See https://docs.python.org/3/library/sqlite3.html#how-to-work-with-sqlite-uris)
-    connection = sqlite3.connect(f"file:{database_name}.db?mode=rw", uri = True)
-except sqlite3.OperationalError:
-    connection = sqlite3.connect(f"{database_name}.db")
-    with open(f"{database_name}.sql", "r") as schema:
-        connection.executescript(schema.read())
-connection.execute("pragma foreign_keys = on;") # Enable foreign key constraints
+class Connection:
+    def __init__(self, database_name = "recap", memory = False):
+        try:
+            # Connect without implicitly creating a new database
+            # See https://docs.python.org/3/library/sqlite3.html#how-to-work-with-sqlite-uris)
+            source = sqlite3.connect(f"file:{database_name}.db?mode=rw", uri = True)
+        except sqlite3.OperationalError:
+            source = sqlite3.connect(f"{database_name}.db")
+            with open(f"{database_name}.sql", "r") as schema:
+                source.executescript(schema.read())
+        # Memory mode opens the connection in RAM so operations are nondestructive
+        if memory:
+            target = sqlite3.connect(":memory:")
+            with target:
+                source.backup(target)
+            source.close()
+            self.source = target
+        else:
+            self.source = source
+        # Enable foreign key constraints
+        self.source.execute("pragma foreign_keys = on;")
 
-def query_game_id(game):
-    result = connection.execute("select game_id from games where game = ?", (game,)).fetchone()
-    return result[0] if result else None
+    def query_game_id(self, game):
+        game_id = self.source.execute("select game_id from games where game = ?", (game,)).fetchone()
+        if game_id:
+            return game_id[0]
 
-def insert_game(post):
-    try:
-        with connection:
-            connection.execute("insert into games (game, dev, tools, web) values (:game, :dev, :tools, :web)", post)
-        return query_game_id(post["game"])
-    except sqlite3.Error as error:
-        logger.error(error)
+    def insert_game(self, post):
+        try:
+            with self.source:
+                self.source.execute("insert into games (game, dev, tools, web) values (:game, :dev, :tools, :web)", post)
+            return self.query_game_id(post["game"])
+        except sqlite3.Error as error:
+            logger.error(error)
 
-def insert_post(post):
-    try:
-        with connection:
-            # TODO: Construct post object from scraped data
-            game_id = query_game_id(post.game)
-            if game_id is None:
-                game_id = insert_game(post)
-            connection.execute(
-                "insert into posts (game_id, unix, ext, progress) values (?, ?, ?, ?)",
-                (game_id, post["unix"], post["ext"], post["progress"])
-            )
-    except sqlite3.Error as error:
-        logger.error(error)
+    def insert_post(self, post):
+        try:
+            with self.source:
+                # TODO: Construct post object from scraped data
+                game_id = self.query_game_id(post["game"])
+                if game_id is None:
+                    game_id = self.query_game_id(post["game"])
+                self.source.execute(
+                    "insert into posts (game_id, unix, ext, progress) values (?, ?, ?, ?);",
+                    (game_id, post["unix"], post["ext"], post["progress"])
+                )
+        except sqlite3.Error as error:
+            logger.error(error)
 
-def close():
-    connection.close()
+    def close(self):
+        self.source.close()
