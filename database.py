@@ -25,7 +25,7 @@ class Connection:
         # Enable foreign key constraints
         self.source.execute("pragma foreign_keys = on;")
 
-    def query_game_id(self, game):
+    def get_game_id(self, game):
         game_id = self.source.execute("select game_id from games where game = ?", (game,)).fetchone()
         if game_id:
             return game_id[0]
@@ -34,17 +34,16 @@ class Connection:
         try:
             with self.source:
                 self.source.execute("insert into games (game, dev, tools, web) values (:game, :dev, :tools, :web)", post)
-            return self.query_game_id(post["game"])
+            return self.get_game_id(post["game"])
         except sqlite3.Error as error:
             logger.error(error)
 
     def insert_post(self, post):
         try:
             with self.source:
-                # TODO: Construct post object from scraped data
-                game_id = self.query_game_id(post["game"])
+                game_id = self.get_game_id(post["game"])
                 if game_id is None:
-                    game_id = self.query_game_id(post["game"])
+                    game_id = self.get_game_id(post["game"])
                 self.source.execute(
                     "insert into posts (game_id, unix, ext, progress) values (?, ?, ?, ?);",
                     (game_id, post["unix"], post["ext"], post["progress"])
