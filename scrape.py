@@ -8,12 +8,40 @@ import urllib.request
 
 logger = logging.getLogger(__name__)
 
+CACHE_PATH = "cache.json"
+URLS = {
+    "CATALOG": "https://a.4cdn.org/vg/catalog.json",
+    "ARCHIVE": "https://a.4cdn.org/vg/archive.json",
+    "THREAD": "https://a.4cdn.org/vg/thread/%s.json",
+    "FILE": "https://i.4cdn.org/vg/%d%s"
+}
+
 def get_json(url):
     try:
         with urllib.request.urlopen(url) as data:
             return json.load(data)
     except urllib.error.HTTPError as error:
         logger.error(f"{url} returned {error}")
+
+def get_agdg_threads():
+    cached = []
+    archived = get_json(URLS["ARCHIVE"])
+    try:
+        with open(CACHE_PATH, "r") as cache:
+            cached = json.load(cache)
+    except IOError:
+        logger.error("Thread cache couldn't be read")
+    def is_agdg(post):
+        return "agdg" in post.get("sub", "").casefold()
+    # Check all newly archived threads (or if the cache is empty, all archived threads)
+    threads = [no for no in set(archived) - set(cached) if is_agdg(get_json(URLS["THREAD"] % no)["posts"][0])]
+    for page in get_json(URLS["CATALOG"]):
+        for original_post in page["threads"]:
+            if is_agdg(original_post):
+                threads.append(original_post["no"])
+    with open(CACHE_PATH, "w") as cache:
+        json.dump(archived, cache, separators = (",", ":"))
+    return threads
 
 def decode_unix(unix):
     # Converts a unix timestamp to YYMMW format, e.g. 1587240724142 -> 20043
@@ -37,19 +65,3 @@ def decode_unix(unix):
     elif first_weekday_index < week_threshold:
         week += 1
     return int(f"{date.strftime('%y%m')}{week}")
-
-class Endpoint:
-    catalog = "https://a.4cdn.org/vg/catalog.json"
-    thread = "https://a.4cdn.org/vg/thread/%s.json"
-    file = "https://i.4cdn.org/vg/%d%s"
-
-class FourChannelScraper:
-    def __init__(self):
-        self.agdg_thread_no = 0
-
-    def get_agdg_thread(self):
-        for page in get_json(Endpoint.catalog):
-            for thread in page["threads"]:
-                if "agdg" in thread["sub"] and self.agdg_thread_no < thread["no"]:
-                    self.agdg_thread_no = thread["no"]
-        return get_json(Endpoint.thread % self.agdg_thread_no)

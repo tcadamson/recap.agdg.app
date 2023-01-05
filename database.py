@@ -26,14 +26,14 @@ class Connection:
         self.source.execute("pragma foreign_keys = on;")
 
     def get_game_id(self, title):
-        game_id = self.source.execute("select id from games where title = ?", (title,)).fetchone()
+        game_id = self.source.execute("select id from games where title = ?;", (title,)).fetchone()
         if game_id:
             return game_id[0]
 
     def insert_game(self, post):
         try:
             with self.source:
-                self.source.execute("insert into games (title, dev, tools, web) values (:title, :dev, :tools, :web)", post)
+                self.source.execute("insert into games (title, dev, tools, web) values (:title, :dev, :tools, :web);", post)
             return self.get_game_id(post["title"])
         except sqlite3.Error as error:
             logger.error(error)

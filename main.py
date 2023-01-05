@@ -11,10 +11,8 @@ logger = logging.getLogger(__name__)
 
 def main():
     connection = database.Connection(memory = True)
-    scraper = scrape.FourChannelScraper()
-    logger.info(scrape.decode_unix(1664772327243232))
-    logger.info(connection.get_game_id("Frostbite"))
     connection.close()
+    logger.info(scrape.get_agdg_threads())
 
 if __name__ == "__main__":
     main()
