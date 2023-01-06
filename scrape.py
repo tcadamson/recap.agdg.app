@@ -3,6 +3,7 @@ import json
 import datetime
 import calendar
 import math
+import functools
 import urllib.error
 import urllib.request
 
@@ -12,11 +13,15 @@ CACHE_PATH = "cache.json"
 URLS = {
     "CATALOG": "https://a.4cdn.org/vg/catalog.json",
     "ARCHIVE": "https://a.4cdn.org/vg/archive.json",
-    "THREAD": "https://a.4cdn.org/vg/thread/%s.json",
+    "THREAD": "https://a.4cdn.org/vg/thread/%d.json",
     "FILE": "https://i.4cdn.org/vg/%d%s"
 }
 
-def get_json(url):
+@functools.lru_cache()
+def get_json(url = None, num = None):
+    # Purely for convenience to access JSON for specified thread number
+    if num:
+        url = URLS["THREAD"] % num
     try:
         with urllib.request.urlopen(url) as data:
             return json.load(data)
@@ -24,6 +29,12 @@ def get_json(url):
         logger.error(f"{url} returned {error}")
 
 def get_agdg_threads():
+    """
+    Locates the threads that need to be processed by the scraper (in the catalog, or in the archive and not previously seen).
+    A cache of previously seen thread numbers is utilized since JSON fetches could otherwise take upwards of a minute per
+    function call
+    :return: List of thread numbers to process
+    """
     cached = []
     archived = get_json(URLS["ARCHIVE"])
     try:
@@ -34,7 +45,7 @@ def get_agdg_threads():
     def is_agdg(post):
         return "agdg" in post.get("sub", "").casefold()
     # Check all newly archived threads (or if the cache is empty, all archived threads)
-    threads = [no for no in set(archived) - set(cached) if is_agdg(get_json(URLS["THREAD"] % no)["posts"][0])]
+    threads = [num for num in set(archived) - set(cached) if is_agdg(get_json(num = num)["posts"][0])]
     for page in get_json(URLS["CATALOG"]):
         for original_post in page["threads"]:
             if is_agdg(original_post):
@@ -44,8 +55,12 @@ def get_agdg_threads():
     return threads
 
 def decode_unix(unix):
-    # Converts a unix timestamp to YYMMW format, e.g. 1587240724142 -> 20043
-    # Recap week begins every Monday at 12 AM (UTC), spanning Monday to Sunday inclusive; date logic follows from this
+    """
+    Converts a unix timestamp to YYMMW format, e.g. 1587240724142 -> 20043
+    Recap week begins every Monday at 12 AM (UTC), spanning Monday to Sunday inclusive; the date logic follows from this
+    :param unix: Unix timestamp (with or without microtime)
+    :return: Corresponding datestamp of form YYMMW
+    """
     date = datetime.datetime.fromtimestamp(int(str(unix)[:10]))
     day = date.day
     week_delta = datetime.timedelta(weeks = 1)
@@ -65,3 +80,8 @@ def decode_unix(unix):
     elif first_weekday_index < week_threshold:
         week += 1
     return int(f"{date.strftime('%y%m')}{week}")
+
+def run():
+    for num in get_agdg_threads():
+        thread = get_json(num = num)
+        logger.info(f"{num} ({len(thread['posts'])} posts)")

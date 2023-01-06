@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 def main():
     connection = database.Connection(memory = True)
     connection.close()
-    logger.info(scrape.get_agdg_threads())
+    scrape.run()
 
 if __name__ == "__main__":
     main()

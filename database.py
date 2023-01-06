@@ -5,6 +5,12 @@ logger = logging.getLogger(__name__)
 
 class Connection:
     def __init__(self, database_name = "recap", memory = False):
+        """
+        Connection class provides an interface for interacting with the SQLite database file. If the database file does not exist
+        (e.g. on initial run), it is created using the included schema. Must be closed with the close() method after use.
+        :param database_name: Database filename
+        :param memory: Memory mode flag
+        """
         try:
             # Connect without implicitly creating a new database
             # See https://docs.python.org/3/library/sqlite3.html#how-to-work-with-sqlite-uris)
