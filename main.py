@@ -1,6 +1,6 @@
 import logging
-import database
-import scrape
+
+import scraper
 
 logging.basicConfig(
     format = "%(asctime)s :: %(levelname)s [%(filename)s:%(lineno)d] :: %(message)s",
@@ -10,9 +10,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def main():
-    connection = database.Connection(memory = True)
-    connection.close()
-    scrape.run()
+    scraper.scrape()
 
 if __name__ == "__main__":
     main()
