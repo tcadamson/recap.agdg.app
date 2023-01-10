@@ -3,7 +3,7 @@
 -- Games data; information about each project
 create table games (
     id integer primary key autoincrement,
-    title text not null unique,
+    title text collate NOCASE not null unique,
     dev text not null,
     tools text not null,
     web text not null
