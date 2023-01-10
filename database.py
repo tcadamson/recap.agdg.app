@@ -36,7 +36,8 @@ class Connection:
     def execute(self, query, parameters = ()):
         """
         Helper for executing queries on the connection object. Uses the connection as a context manager for automatic transaction
-        management (https://docs.python.org/3.9/library/sqlite3.html#using-the-connection-as-a-context-manager).
+        management (https://docs.python.org/3.9/library/sqlite3.html#using-the-connection-as-a-context-manager) and provides
+        informative error handling.
         :param query: Query string
         :param parameters: Values to be substituted into any query placeholders
         :return: Cursor (on successful execution)
@@ -45,7 +46,7 @@ class Connection:
             with self.source:
                 return self.source.execute(query, parameters)
         except sqlite3.Error as error:
-            logger.error(error)
+            logger.error(re.sub(r"class \'(.+)\'", r"\1", str(error.__class__)) + f" {error}")
 
     def insert_row(self, table, row_data):
         columns = f"({', '.join(row_data.keys())})"
