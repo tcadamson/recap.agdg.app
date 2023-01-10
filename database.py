@@ -1,4 +1,5 @@
 import logging
+import re
 import sqlite3
 
 logger = logging.getLogger(__name__)
@@ -28,34 +29,42 @@ class Connection:
             self.source = target
         else:
             self.source = source
+        self.source.row_factory = sqlite3.Row
         # Enable foreign key constraints
         self.source.execute("pragma foreign_keys = on;")
 
-    def get_game_id(self, title):
-        game_id = self.source.execute("select id from games where title = ?;", (title,)).fetchone()
-        if game_id:
-            return game_id[0]
-
-    def insert_game(self, post):
+    def execute(self, query, parameters = ()):
+        """
+        Helper for executing queries on the connection object. Uses the connection as a context manager for automatic transaction
+        management (https://docs.python.org/3.9/library/sqlite3.html#using-the-connection-as-a-context-manager).
+        :param query: Query string
+        :param parameters: Values to be substituted into any query placeholders
+        :return: Cursor (on successful execution)
+        """
         try:
             with self.source:
-                self.source.execute("insert into games (title, dev, tools, web) values (:title, :dev, :tools, :web);", post)
-            return self.get_game_id(post["title"])
+                return self.source.execute(query, parameters)
         except sqlite3.Error as error:
             logger.error(error)
 
-    def insert_post(self, post):
-        try:
-            with self.source:
-                game_id = self.get_game_id(post["title"])
-                if game_id is None:
-                    game_id = self.get_game_id(post["title"])
-                self.source.execute(
-                    "insert into posts (game_id, unix, ext, progress) values (?, ?, ?, ?);",
-                    (game_id, post["unix"], post["ext"], post["progress"])
-                )
-        except sqlite3.Error as error:
-            logger.error(error)
+    def insert_row(self, table, row_data):
+        columns = f"({', '.join(row_data.keys())})"
+        placeholders = re.sub(r"(\w+)", r":\1", columns)
+        cursor = self.execute(f"insert into {table} {columns} values {placeholders};", row_data)
+        if cursor:
+            return self.get_row(table, cursor.lastrowid)
+
+    def get_row(self, table, row_id):
+        return self.execute(f"select * from {table} where id = ?;", (row_id,)).fetchone()
+
+    def get_game(self, title):
+        return self.execute("select * from games where title = ?;", (title,)).fetchone()
+
+    def update_game_columns(self, game, **kwargs):
+        self.execute(
+            f"update games set {', '.join(f'{column} = ?' for column in kwargs.keys())} where title = ?;",
+            list(kwargs.values()) + [game["title"]]
+        )
 
     def close(self):
         self.source.close()
