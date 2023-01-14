@@ -4,6 +4,8 @@ import functools
 import html
 import json
 import logging
+import re
+# TODO: Possibly change requests library due to "EOF occurred in violation of protocol" bug
 import urllib.error
 import urllib.request
 
@@ -84,13 +86,44 @@ def decode_unix(unix):
         week += 1
     return int(f"{date.strftime('%y%m')}{week}")
 
+def process_post(post):
+    """
+    Parses any recap data found in the given post and adds it to the posts table. Additionally, updates a game's properties if
+    those fields are present (dev, tools, web). See below for the expected format. It should be noted that only "title" and
+    "progress" are strictly necessary; the aforementioned property fields are optional.
+    :: (title) ::
+    dev ::
+    tools ::
+    web ::
+    (progress)
+    :param post: Post object to process
+    :return: None
+    """
+    comment = html.unescape(post.get("com", ""))
+    field_pattern = r"<br>(dev|tools|web)\s?::\s?(.*?)(?=<br>|$)"
+    for sanitize_pattern in [
+        r"\\(\S)",
+        r"\s?(<br>)\s?",
+        r"<span.+?>(.+?)</span>"
+    ]:
+        comment = re.sub(sanitize_pattern, r"\1", comment)
+    recap_match = re.search(r"::\s?(.+?)\s?::\s?(.+$)", comment)
+    if recap_match:
+        connection = database.Connection(memory = True)
+        title = recap_match.group(1)
+        body = recap_match.group(2)
+        game_data = {"title": title} | {k.casefold(): v for k, v in re.findall(field_pattern, body, flags = re.IGNORECASE)}
+        game = connection.get_game(title) or connection.insert_row("games", **game_data)
+        connection.insert_row("posts", {
+            "game_id": game["id"],
+            "unix": post.get("tim", post["time"]),
+            "ext": post.get("ext", ""),
+            "progress": re.sub(r"^(<br>)*", "", re.split(field_pattern, body)[-1])
+        })
+        connection.update_game_columns(game, **game_data)
+        connection.close()
+
 def scrape():
-    """
-    Iterates over all threads in need of processing, matching any posts with the recap format and adding their corresponding data
-    to the SQLite database.
-    """
-    connection = database.Connection(memory = True)
     for thread_no in get_agdg_threads():
         for post in get_json(thread_no = thread_no)["posts"]:
-            comment = html.unescape(post.get("com", "")).replace("<wbr>", "")
-    connection.close()
+            process_post(post)
