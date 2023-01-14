@@ -101,7 +101,7 @@ def decode_unix(unix):
         week += 1
     return int(f"{date.strftime('%y%m')}{week}")
 
-def process_post(post):
+def process_post(post, connection):
     """
     Parses any recap data found in the given post and adds it to the posts table. Additionally, updates a game's properties if
     those fields are present (dev, tools, web). See below for the expected format. It should be noted that only "title" and
@@ -112,6 +112,7 @@ def process_post(post):
     web ::
     (progress)
     :param post: Post object to process
+    :param connection: Database connection
     :return: None
     """
     comment = html.unescape(post.get("com", ""))
@@ -124,7 +125,6 @@ def process_post(post):
         comment = re.sub(sanitize_pattern, r"\1", comment)
     recap_match = re.search(r"::\s?(.+?)\s?::\s?(.+$)", comment)
     if recap_match:
-        connection = database.Connection(memory = True)
         title = recap_match.group(1)
         body = recap_match.group(2)
         game_data = {"title": title} | {k.casefold(): v for k, v in re.findall(field_pattern, body, flags = re.IGNORECASE)}
@@ -136,9 +136,10 @@ def process_post(post):
             "progress": re.sub(r"^(<br>)*", "", re.split(field_pattern, body)[-1])
         })
         connection.update_game_columns(game, **game_data)
-        connection.close()
 
 def scrape():
+    connection = database.Connection(memory = True)
     for thread_no in get_agdg_threads():
         for post in get_json(thread_no = thread_no)["posts"]:
-            process_post(post)
+            process_post(post, connection)
+    connection.close()
