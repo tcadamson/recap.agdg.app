@@ -5,7 +5,6 @@ import html
 import json
 import logging
 import re
-# TODO: Possibly change requests library due to "EOF occurred in violation of protocol" bug
 import urllib.error
 import urllib.request
 
@@ -34,6 +33,24 @@ def get_json(url = None, thread_no = None):
     except urllib.error.HTTPError as error:
         logger.error(f"{url} returned {error}")
 
+def is_agdg_thread(op = None, thread_no = None):
+    """
+    Helper for determining /agdg/ threads through the subject attribute of the opening post object. Sometimes the post object
+    isn't immediately accessible, e.g. when processing the archive, which is just a collection of thread numbers. In these
+    cases, the thread number may be used directly, albeit with the more expensive get_json call.
+    :param op: Opening post object to evaluate
+    :param thread_no: Thread number to retrieve opening post object from (if post object unavailable)
+    :return: Boolean result
+    """
+    if thread_no:
+        thread = get_json(thread_no = thread_no)
+        if thread:
+            op = thread["posts"][0]
+        else:
+            # Most likely a 404 due to mods manually deleting the thread
+            return False
+    return "agdg" in op.get("sub", "").casefold()
+
 def get_agdg_threads():
     """
     Locates the threads that need to be processed by the scraper (in the catalog, or in the archive and not previously seen).
@@ -48,13 +65,11 @@ def get_agdg_threads():
             cached = json.load(cache)
     except IOError:
         logger.error("Thread cache couldn't be read")
-    def is_agdg(post):
-        return "agdg" in post.get("sub", "").casefold()
-    threads = [x for x in (set(archived) - set(cached)) if is_agdg(get_json(thread_no = x)["posts"][0])]
+    threads = [x for x in (set(archived) - set(cached)) if is_agdg_thread(thread_no = x)]
     for page in get_json(URLS["CATALOG"]):
-        for original_post in page["threads"]:
-            if is_agdg(original_post):
-                threads.append(original_post["no"])
+        for op in page["threads"]:
+            if is_agdg_thread(op):
+                threads.append(op["no"])
     with open(CACHE_PATH, "w") as cache:
         json.dump(archived, cache, separators = (",", ":"))
     return threads
