@@ -48,23 +48,29 @@ class Connection:
         except sqlite3.Error as error:
             logger.error(re.sub(r"class \'(.+)\'", r"\1", str(error.__class__)) + f" {error}")
 
-    def insert_row(self, table, row_data):
-        columns = f"({', '.join(row_data.keys())})"
+    def insert_row(self, table, **kwargs):
+        columns = f"({', '.join(kwargs.keys())})"
         placeholders = re.sub(r"(\w+)", r":\1", columns)
-        cursor = self.execute(f"insert into {table} {columns} values {placeholders};", row_data)
+        cursor = self.execute(f"insert into {table} {columns} values {placeholders};", kwargs)
         if cursor:
-            return self.get_row(table, cursor.lastrowid)
-
-    def get_row(self, table, row_id):
-        return self.execute(f"select * from {table} where id = ?;", (row_id,)).fetchone()
+            return self.execute(f"select * from {table} where id = ?;", (cursor.lastrowid,)).fetchone()
 
     def get_game(self, title):
         return self.execute("select * from games where title = ?;", (title,)).fetchone()
 
-    def update_game_columns(self, game, **kwargs):
+    def update_game(self, game, **kwargs):
+        """
+        Updates a game's properties. Note that "title" can only have its case changed, since it's used as the unique identifier in
+        a recap post. A special syntax will need to be implemented to support actual title updating. A row object is passed instead
+        of a title to spare the extra SQL query for "id" lookup, and because this function is only called where the row object is
+        already immediately accessible.
+        :param game: Game row object
+        :param kwargs: Properties to update (title, dev, tools, web)
+        :return: Cursor
+        """
         self.execute(
-            f"update games set {', '.join(f'{column} = ?' for column in kwargs.keys())} where title = ?;",
-            list(kwargs.values()) + [game["title"]]
+            f"update games set {', '.join(f'{column} = ?' for column in kwargs.keys())} where id = ?;",
+            list(kwargs.values()) + [game["id"]]
         )
 
     def close(self):

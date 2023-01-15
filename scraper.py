@@ -129,13 +129,13 @@ def process_post(post, connection):
         body = recap_match.group(2)
         game_data = {"title": title} | {k.casefold(): v for k, v in re.findall(field_pattern, body, flags = re.IGNORECASE)}
         game = connection.get_game(title) or connection.insert_row("games", **game_data)
-        connection.insert_row("posts", {
-            "game_id": game["id"],
-            "unix": post.get("tim", post["time"]),
-            "ext": post.get("ext", ""),
-            "progress": re.sub(r"^(<br>)*", "", re.split(field_pattern, body)[-1])
-        })
-        connection.update_game_columns(game, **game_data)
+        connection.insert_row("posts",
+            game_id = game["id"],
+            unix = post.get("tim", post["time"]),
+            ext = post.get("ext", ""),
+            progress = re.sub(r"^(<br>)*", "", re.split(field_pattern, body)[-1])
+        )
+        connection.update_game(game, **game_data)
 
 def scrape():
     connection = database.Connection(memory = True)
