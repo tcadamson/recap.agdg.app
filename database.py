@@ -4,6 +4,11 @@ import sqlite3
 
 logger = logging.getLogger(__name__)
 
+COLUMN_DEFAULTS = {
+    "INTEGER": 0,
+    "TEXT": ""
+}
+
 class Connection:
     def __init__(self, database_name = "recap", memory = False):
         """
@@ -49,29 +54,43 @@ class Connection:
             logger.error(re.sub(r"class \'(.+)\'", r"\1", str(error.__class__)) + f" {error}")
 
     def insert_row(self, table, **kwargs):
-        columns = f"({', '.join(kwargs.keys())})"
-        placeholders = re.sub(r"(\w+)", r":\1", columns)
-        cursor = self.execute(f"insert into {table} {columns} values {placeholders};", kwargs)
+        """
+        Inserts a row into the table using the given column data. Column schema is determined programmatically and default values
+        are used when applicable. If the specified columns do not exist in the schema, insertion will fail and raise an SQL
+        exception instead of quietly sanitizing the input (by design, to help with debugging).
+        :param table: Table name
+        :param kwargs: Column values to insert
+        :return: Row object (on successful insertion)
+        """
+        row_data = {
+            k: COLUMN_DEFAULTS[v] for k, v in self.execute(f"select name, type from pragma_table_info('{table}') where pk != 1").fetchall()
+        } | kwargs
+        query_columns = ",".join(row_data.keys())
+        query_placeholders = ":" + ",:".join(row_data.keys())
+        cursor = self.execute(f"insert into {table} ({query_columns}) values ({query_placeholders});", row_data)
         if cursor:
-            return self.execute(f"select * from {table} where id = ?;", (cursor.lastrowid,)).fetchone()
+            # https://peps.python.org/pep-0249/#lastrowid
+            return self.get_row(table, cursor.lastrowid)
 
-    def get_game(self, title):
-        return self.execute("select * from games where title = ?;", (title,)).fetchone()
+    def update_row(self, table, row_id, **kwargs):
+        query_column_pairs = ",".join([f"{x}=?" for x in kwargs.keys()])
+        self.execute(f"update {table} set {query_column_pairs} where id = ?;", tuple(kwargs.values()) + (row_id,))
 
-    def update_game(self, game, **kwargs):
+    def get_row(self, table, row_id = None, **kwargs):
+        return self.execute(f"select * from {table} where id = ?;", (row_id or self.get_id(table, **kwargs),)).fetchone()
+
+    def get_id(self, table, **kwargs):
         """
-        Updates a game's properties. Note that "title" can only have its case changed, since it's used as the unique identifier in
-        a recap post. A special syntax will need to be implemented to support actual title updating. A row object is passed instead
-        of a title to spare the extra SQL query for "id" lookup, and because this function is only called where the row object is
-        already immediately accessible.
-        :param game: Game row object
-        :param kwargs: Properties to update (title, dev, tools, web)
-        :return: Cursor
+        Gets the ID for a row given a separate key column value. Note that only the first kwarg pair is taken, and this pair must
+        correspond to a key column, since multiple rows could match otherwise (only the first would be selected).
+        :param table: Table name
+        :param kwargs: Key column value
+        :return: Row ID
         """
-        self.execute(
-            f"update games set {', '.join(f'{column} = ?' for column in kwargs.keys())} where id = ?;",
-            list(kwargs.values()) + [game["id"]]
-        )
+        key = next(iter(kwargs))
+        cursor = self.execute(f"select id from {table} where {key} = :{key};", kwargs).fetchone()
+        if cursor:
+            return cursor["id"]
 
     def close(self):
         self.source.close()

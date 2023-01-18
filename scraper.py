@@ -64,7 +64,7 @@ def get_agdg_threads():
         with open(CACHE_PATH, "r") as cache:
             cached = json.load(cache)
     except IOError:
-        logger.error("Thread cache couldn't be read")
+        logger.error("Failed to read thread cache")
     threads = [x for x in (set(archived) - set(cached)) if is_agdg_thread(thread_no = x)]
     for page in get_json(URLS["CATALOG"]):
         for op in page["threads"]:
@@ -104,38 +104,57 @@ def decode_unix(unix):
 def process_post(post, connection):
     """
     Parses any recap data found in the given post and adds it to the posts table. Additionally, updates a game's properties if
-    those fields are present (dev, tools, web). See below for the expected format. It should be noted that only "title" and
-    "progress" are strictly necessary; the aforementioned property fields are optional.
+    those fields are present (dev, tools, web). It should be noted that only "title" is strictly necessary; if "title" is
+    accompanied by at least one field and/or "progress", the post will be processed. Expected format:
+
     :: (title) ::
     dev ::
     tools ::
     web ::
     (progress)
+
+    Lastly, a game's title may be updated through use of a special syntax:
+
+    :: (old title) -> (new title) ::
+
     :param post: Post object to process
     :param connection: Database connection
     :return: None
     """
     comment = html.unescape(post.get("com", ""))
-    field_pattern = r"<br>(dev|tools|web)\s?::\s?(.*?)(?=<br>|$)"
+    field_pattern = r"(?:<br>)+(dev|tools|web)::((?:(?!::|<br>).)+?)(?=$|<br>)"
     for sanitize_pattern in [
         r"\\(\S)",
-        r"\s?(<br>)\s?",
-        r"<span.+?>(.+?)</span>"
+        r"<span.+?>(.+?)</span>",
+        r"\s?(::):*\s?",
+        r"\s?(->)\s?",
+        r"\s?(<br>)\s?"
     ]:
         comment = re.sub(sanitize_pattern, r"\1", comment)
-    recap_match = re.search(r"::\s?(.+?)\s?::\s?(.+$)", comment)
+    recap_match = re.search(r"::((?:(?!->|<br>).)+?)(?:->((?:(?!<br>).)+?))?::(.+$)", comment)
     if recap_match:
-        title = recap_match.group(1)
-        body = recap_match.group(2)
-        game_data = {"title": title} | {k.casefold(): v for k, v in re.findall(field_pattern, body, flags = re.IGNORECASE)}
-        game = connection.get_game(title) or connection.insert_row("games", **game_data)
-        connection.insert_row("posts",
-            game_id = game["id"],
-            unix = post.get("tim", post["time"]),
-            ext = post.get("ext", ""),
-            progress = re.sub(r"^(<br>)*", "", re.split(field_pattern, body)[-1])
-        )
-        connection.update_game(game, **game_data)
+        old_title = recap_match.group(1)
+        new_title = recap_match.group(2)
+        content = recap_match.group(3)
+        # While the database already handles the unique title constraint, we want to fall back to the old title instead of
+        # discarding the post entirely
+        if not new_title or connection.get_row("games", title = new_title):
+            new_title = old_title
+        game_data = {"title": new_title} | {k.casefold(): v for k, v in re.findall(field_pattern, content, flags = re.IGNORECASE)}
+        try:
+            game_id = (connection.get_row("games", title = old_title) or connection.insert_row("games", **game_data))["id"]
+            connection.update_row("games", game_id, **game_data)
+            connection.insert_row("posts",
+                game_id = game_id,
+                unix = post.get("tim", post["time"]),
+                ext = post.get("ext", ""),
+                progress = re.search(r"^(?:<br>)*(.+)$", re.split(field_pattern, content)[-1]).group(1)
+            )
+        except AttributeError:
+            # Progress not found
+            pass
+        except TypeError:
+            logger.error(f"Failed to parse https://arch.b4k.co/vg/thread/{post['resto']}/#{post['no']}")
 
 def scrape():
     connection = database.Connection(memory = True)
