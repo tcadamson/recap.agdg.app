@@ -38,6 +38,7 @@ def is_agdg_thread(op = None, thread_no = None):
     Helper for determining /agdg/ threads through the subject attribute of the opening post object. Sometimes the post object
     isn't immediately accessible, e.g. when processing the archive, which is just a collection of thread numbers. In these
     cases, the thread number may be used directly, albeit with the more expensive get_json call.
+
     :param op: Opening post object to evaluate
     :param thread_no: Thread number to retrieve opening post object from (if post object unavailable)
     :return: Boolean result
@@ -56,7 +57,8 @@ def get_agdg_threads():
     Locates the threads that need to be processed by the scraper (in the catalog, or in the archive and not previously seen).
     A cache of previously seen thread numbers is utilized since JSON fetches could otherwise take upwards of a minute per
     function call.
-    :return: List of thread numbers to process
+
+    :return: List of /agdg/ thread numbers
     """
     cached = []
     archived = get_json(URLS["ARCHIVE"])
@@ -78,8 +80,9 @@ def decode_unix(unix):
     """
     Converts a unix timestamp to YYMMW format, e.g. 1587240724142 -> 20043
     Recap week begins every Monday at 12 AM (UTC), spanning Monday to Sunday inclusive; the date logic follows from this.
+
     :param unix: Unix timestamp (with or without microtime)
-    :return: Corresponding datestamp of form YYMMW
+    :return: Datestamp of form YYMMW
     """
     date = datetime.datetime.fromtimestamp(int(str(unix)[:10]))
     day = date.day
@@ -117,7 +120,7 @@ def process_post(post, connection):
 
     :: (old title) -> (new title) ::
 
-    :param post: Post object to process
+    :param post: Post object
     :param connection: Database connection
     :return: None
     """

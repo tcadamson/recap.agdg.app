@@ -14,6 +14,7 @@ class Connection:
         """
         Connection class provides an interface for interacting with the SQLite database file. If the database file does not exist
         (e.g. on initial run), it is created using the included schema. Must be closed with the close() method after use.
+
         :param database_name: Database filename
         :param memory: Memory mode flag
         """
@@ -43,8 +44,9 @@ class Connection:
         Helper for executing queries on the connection object. Uses the connection as a context manager for automatic transaction
         management (https://docs.python.org/3.9/library/sqlite3.html#using-the-connection-as-a-context-manager) and provides
         informative error handling.
+
         :param query: Query string
-        :param parameters: Values to be substituted into any query placeholders
+        :param parameters: Values to substitute into any query placeholders
         :return: Cursor (on successful execution)
         """
         try:
@@ -58,6 +60,7 @@ class Connection:
         Inserts a row into the table using the given column data. Column schema is determined programmatically and default values
         are used when applicable. If the specified columns do not exist in the schema, insertion will fail and raise an SQL
         exception instead of quietly sanitizing the input (by design, to help with debugging).
+
         :param table: Table name
         :param kwargs: Column values to insert
         :return: Row object (on successful insertion)
@@ -83,9 +86,10 @@ class Connection:
         """
         Gets the ID for a row given a separate key column value. Note that only the first kwarg pair is taken, and this pair must
         correspond to a key column, since multiple rows could match otherwise (only the first would be selected).
+
         :param table: Table name
         :param kwargs: Key column value
-        :return: Row ID
+        :return: Row ID (on successful match)
         """
         key = next(iter(kwargs))
         cursor = self.execute(f"select id from {table} where {key} = :{key};", kwargs).fetchone()
