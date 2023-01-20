@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% block head %}
+        <link rel="stylesheet" href="../static/style.css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <title>{% block title %}Home{% endblock %} | Recap</title>
+        {% endblock %}
+    </head>
+    <body>
+        <div id="content">
+            <h1>{{ self.title() }}</h1>
+            {% block content %}<p>Hello, world!</p>{% endblock %}
+        </div>
+    </body>
+</html>
