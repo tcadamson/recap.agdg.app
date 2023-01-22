@@ -2,4 +2,7 @@
 {% block title %}View: {{ datestamp }}{% endblock title %}
 {% block content %}
 <h1>{{ datestamp }}</h1>
+{% for post in posts %}
+<p>{{ post["title"] }}</p>
+{% endfor %}
 {% endblock content %}
