@@ -2,6 +2,7 @@ import os
 import time
 
 from flask import Flask, render_template
+from werkzeug.exceptions import HTTPException
 from werkzeug.routing import BaseConverter, ValidationError
 
 import database
@@ -40,3 +41,7 @@ def view(datestamp):
             posts.append(dict(connection.get_row("games", post["game_id"])) | dict(post))
     connection.close()
     return render_template("view.html", datestamp = datestamp, posts = posts)
+
+@app.errorhandler(HTTPException)
+def error(http_exception):
+    return render_template("error.html", http_exception = http_exception), http_exception.code
