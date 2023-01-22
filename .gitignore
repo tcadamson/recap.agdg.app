@@ -1,4 +1,4 @@
 /.idea/
-/recap.agdg.io/
-/recap.db
+/static/[0-9]*/
 /cache.json
+/recap.db
