@@ -5,6 +5,9 @@ from flask import Flask, render_template
 import scraper
 
 app = Flask(__name__)
+# https://jinja.palletsprojects.com/en/3.0.x/templates/#whitespace-control
+app.jinja_options["trim_blocks"] = True
+app.jinja_options["lstrip_blocks"] = True
 
 @app.route("/")
 def home():
