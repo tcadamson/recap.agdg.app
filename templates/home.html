@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Home{% endblock %}
+{% block title %}Home{% endblock title %}
 {% block content %}
 <h1>/agdg/ weekly recap</h1>
 <a href="{{ url_for("view", datestamp = datestamp) }}">&gt;&gt;{{ datestamp }}</a>
-{% endblock %}
+{% endblock content %}
