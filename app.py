@@ -27,8 +27,8 @@ app.jinja_options["trim_blocks"] = True
 app.jinja_options["lstrip_blocks"] = True
 
 @app.route("/")
-def home():
-    return render_template("home.html", datestamp = scraper.decode_unix(time.time()))
+def index():
+    return render_template("index.html", datestamp = scraper.decode_unix(time.time()))
 
 @app.route("/view/<datestamp:datestamp>")
 def view(datestamp):
