@@ -1,4 +1,6 @@
+import calendar
 import os
+import re
 import time
 
 from flask import Flask, render_template
@@ -16,8 +18,7 @@ class DatestampConverter(BaseConverter):
         # it to perform additional validation not possible through regex
         if os.path.exists(f"static/{value}"):
             return value
-        else:
-            raise ValidationError
+        raise ValidationError
 
 app = Flask(__name__)
 # https://werkzeug.palletsprojects.com/en/2.2.x/routing/#custom-converters
@@ -29,6 +30,15 @@ app.jinja_options["lstrip_blocks"] = True
 @app.route("/")
 def index():
     return render_template("index.html", datestamp = scraper.decode_unix(time.time()))
+
+@app.route("/archive")
+def archive():
+    recaps = []
+    for datestamp in [x.name for x in os.scandir("static") if x.is_dir()]:
+        datestamp_match = re.search(r"^(?P<year>\d{2})(?P<month>\d{2})(?P<week>\d)$", datestamp)
+        if datestamp_match:
+            recaps.append({k: datestamp_match.group(k) for k in datestamp_match.groupdict().keys()})
+    return render_template("archive.html", recaps = recaps)
 
 @app.route("/view/<datestamp:datestamp>")
 def view(datestamp):
@@ -45,3 +55,7 @@ def view(datestamp):
 @app.errorhandler(HTTPException)
 def error(http_exception):
     return render_template("error.html", http_exception = http_exception), http_exception.code
+
+@app.template_filter()
+def month_name(month_index):
+    return calendar.month_name[month_index]
