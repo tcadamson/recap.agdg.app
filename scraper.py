@@ -12,8 +12,6 @@ import math
 
 import database
 
-logger = logging.getLogger(__name__)
-
 CACHE_PATH = "cache.json"
 URLS = {
     "CATALOG": "https://a.4cdn.org/vg/catalog.json",
@@ -21,6 +19,8 @@ URLS = {
     "THREAD": "https://a.4cdn.org/vg/thread/%d.json",
     "FILE": "https://i.4cdn.org/vg/%d%s"
 }
+
+logger = logging.getLogger(__name__)
 
 @functools.lru_cache()
 def get_json(url = None, thread_no = None):

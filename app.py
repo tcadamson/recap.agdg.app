@@ -10,13 +10,15 @@ from werkzeug.routing import BaseConverter, ValidationError
 import database
 import scraper
 
+STATIC_PATH = "static"
+
 class DatestampConverter(BaseConverter):
     regex = r"\d{5}"
 
     def to_python(self, value):
         # Overriding to_python isn't actually necessary (we don't transform the datestamp into a different object), however we need
         # it to perform additional validation not possible through regex
-        if os.path.exists(f"static/{value}"):
+        if os.path.exists(f"{STATIC_PATH}/{value}"):
             return value
         raise ValidationError
 
@@ -34,7 +36,7 @@ def index():
 @app.route("/archive")
 def archive():
     recaps = []
-    for datestamp in [x.name for x in os.scandir("static") if x.is_dir()]:
+    for datestamp in [x.name for x in os.scandir(STATIC_PATH) if x.is_dir()]:
         datestamp_match = re.search(r"^(?P<year>\d{2})(?P<month>\d{2})(?P<week>\d)$", datestamp)
         if datestamp_match:
             recaps.append({k: datestamp_match.group(k) for k in datestamp_match.groupdict().keys()})
@@ -43,7 +45,7 @@ def archive():
 @app.route("/view/<datestamp:datestamp>")
 def view(datestamp):
     posts = []
-    filenames = [x.split(".")[0] for x in os.listdir(f"static/{datestamp}")]
+    filenames = [x.split(".")[0] for x in os.listdir(f"{STATIC_PATH}/{datestamp}")]
     connection = database.Connection(memory = True)
     cursor = connection.execute(f"select * from posts where unix in ({','.join(['?'] * len(filenames))})", filenames)
     if cursor:
