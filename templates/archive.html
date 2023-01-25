@@ -1,16 +1,15 @@
 {% extends "base.html" %}
 {% block title %}Archive{% endblock title %}
 {% block content %}
-{% for year, year_recaps in recaps|groupby("year")|reverse %}
+{% for year, datestamps in recaps|groupby("year")|reverse %}
 <div>
     <h1>{{ 2000 + year|int }}</h1>
-    {% for month, month_recaps in year_recaps|groupby("month")|reverse %}
+    {% for month, datestamps in datestamps|groupby("month")|reverse %}
     <div>
         <h2>{{ month|int|month_name|lower }}</h2>
-        {% for recap in month_recaps|reverse %}
-        {% set week = recap["week"] %}
+        {% for datestamp in datestamps|reverse %}
         <div>
-            <p><a href="{{ url_for("view", datestamp = [year, month, week]|join) }}">week {{ week }}</a></p>
+            <p><a href="{{ url_for("view", datestamp = datestamp.values()|join) }}">week {{ datestamp["week"] }}</a></p>
         </div>
         {% endfor %}
     </div>
