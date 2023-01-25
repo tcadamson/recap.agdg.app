@@ -59,4 +59,4 @@ def error(http_exception):
 
 @app.template_filter()
 def month_name(month_index):
-    return calendar.month_name[month_index]
+    return calendar.month_name[int(month_index)]

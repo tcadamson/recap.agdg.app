@@ -6,7 +6,7 @@
     <h1>{{ 2000 + year|int }}</h1>
     {% for month, datestamps in datestamps|groupby("month")|reverse %}
     <div>
-        <h2>{{ month|int|month_name|lower }}</h2>
+        <h2>{{ month|month_name|lower }}</h2>
         {% for datestamp in datestamps|reverse %}
         <div>
             <p><a href="{{ url_for("view", datestamp = datestamp.values()|join) }}">week {{ datestamp["week"] }}</a></p>
