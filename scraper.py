@@ -84,7 +84,7 @@ def decode_unix(unix = datetime.datetime.now(datetime.timezone.utc).timestamp())
     :param unix: Unix timestamp (with or without microtime)
     :return: Datestamp of form YYMMW
     """
-    date = datetime.datetime.fromtimestamp(int(str(unix)[:10]), tz = datetime.timezone.utc)
+    date = datetime.datetime.fromtimestamp(float(re.sub(r"(\d{10})(\d+)", r"\1.\2", str(unix))), tz = datetime.timezone.utc)
     day = date.day
     week_delta = datetime.timedelta(weeks = 1)
     week_threshold = math.ceil(week_delta.days / 2)
