@@ -76,7 +76,7 @@ def get_agdg_threads():
         json.dump(archived, cache, separators = (",", ":"))
     return threads
 
-def decode_unix(unix):
+def decode_unix(unix = datetime.datetime.now(datetime.timezone.utc).timestamp()):
     """
     Converts a unix timestamp to YYMMW format, e.g. 1587240724142 -> 20043
     Recap week begins every Monday at 12 AM (UTC), spanning Monday to Sunday inclusive; the date logic follows from this.
@@ -84,7 +84,7 @@ def decode_unix(unix):
     :param unix: Unix timestamp (with or without microtime)
     :return: Datestamp of form YYMMW
     """
-    date = datetime.datetime.fromtimestamp(int(str(unix)[:10]))
+    date = datetime.datetime.fromtimestamp(int(str(unix)[:10]), tz = datetime.timezone.utc)
     day = date.day
     week_delta = datetime.timedelta(weeks = 1)
     week_threshold = math.ceil(week_delta.days / 2)

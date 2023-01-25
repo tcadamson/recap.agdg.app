@@ -1,7 +1,6 @@
 import calendar
 import os
 import re
-import time
 
 from flask import Flask, render_template
 from werkzeug.exceptions import HTTPException
@@ -31,7 +30,7 @@ app.jinja_options["lstrip_blocks"] = True
 
 @app.route("/")
 def index():
-    return render_template("index.html", datestamp = scraper.decode_unix(time.time()))
+    return render_template("index.html", datestamp = scraper.decode_unix())
 
 @app.route("/archive")
 def archive():
