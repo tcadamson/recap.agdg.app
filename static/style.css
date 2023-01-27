@@ -4,21 +4,18 @@
     --color-font: #e3e3e3;
     --font-family: Inter, sans-serif;
     --font-body-size: 1rem;
+    --font-body-weight: 400;
     --font-body-line-height: 1.5rem;
     --font-headline-size: 1.5rem;
     --font-headline-line-height: 2rem;
     --font-display-size: 2.8125rem;
     --font-display-line-height: 3.25rem;
-    --font-weight-regular: 400;
-    --font-weight-medium: 500;
-    --font-weight-semibold: 600;
-    --font-weight-bold: 700;
 }
 
 body {
     background: var(--color-background);
     color: var(--color-font);
-    font: var(--font-weight-regular) var(--font-body-size)/var(--font-body-line-height) var(--font-family);
+    font: var(--font-body-weight) var(--font-body-size)/var(--font-body-line-height) var(--font-family);
 }
 
 h1 {
