@@ -1,5 +1,14 @@
 :root {
-    --font-size-regular: 1.3125rem;
+    --color-background: #1f1f1f;
+    --color-surface: #28292a;
+    --color-font: #e3e3e3;
+    --font-family: Inter, sans-serif;
+    --font-size-body: 1rem;
+    --font-size-headline: 1.5rem;
+    --font-size-display: 2.8125rem;
+    --font-line-height-body: 1.5rem;
+    --font-line-height-headline: 2rem;
+    --font-line-height-display: 3.25rem;
     --font-weight-regular: 400;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
@@ -7,7 +16,26 @@
 }
 
 body {
-    font-family: "Inter", sans-serif;
-    font-size: var(--font-size-regular);
-    font-weight: var(--font-weight-semibold);
+    background: var(--color-background);
+    color: var(--color-font);
+    font: var(--font-weight-regular) var(--font-size-body)/var(--font-line-height-body) var(--font-family);
+}
+
+h1 {
+    font-size: var(--font-size-display);
+    line-height: var(--font-line-height-display);
+}
+
+h2 {
+    font-size: var(--font-size-headline);
+    line-height: var(--font-line-height-headline);
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
