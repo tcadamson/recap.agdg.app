@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Archive{% endblock title %}
+{% block display %}{{ self.title() }}{% endblock display %}
 {% block content %}
 {% for year, datestamps in recaps|groupby("year")|reverse %}
 <article>
-    <h1>{{ 2000 + year|int }}</h1>
+    <h2>{{ 2000 + year|int }}</h2>
     {% for month, datestamps in datestamps|groupby("month")|reverse %}
     <section>
         <h2>{{ month|month_name|lower }}</h2>
