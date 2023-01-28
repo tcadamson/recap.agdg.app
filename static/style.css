@@ -43,6 +43,11 @@ a:hover {
     object-position: center;
 }
 
+.catalog {
+    display: flex;
+    flex-flow: row wrap;
+}
+
 .catalog-media {
     height: 14.625rem;
 }

@@ -2,31 +2,32 @@
 {% block title %}View: {{ datestamp }}{% endblock title %}
 {% block content %}
 <h1>{{ datestamp }}</h1>
-{% for title in titles %}
-<article class="catalog-entry">
-    <h2>{{ title }}</h2>
-    {% for union in unions|selectattr("title", "==", title) %}
-    {% set url = url_for("static", filename = "%s/%s" % (datestamp, union["unix"] ~ union["ext"])) %}
-    <a href="{{ url }}">
-        {% if union["ext"] == ".webm" %}
-        <video class="media catalog-media" src="{{ url }}" autoplay muted loop></video>
-        {% else %}
-        <img class="media catalog-media" src="{{ url }}" alt="{{ "%s/%s" % (title|replace(" ", ""), datestamp) }}">
-        {% endif %}
-    </a>
-    {% autoescape false %}
-    <table>
-        {% set fields = ["dev", "tools", "web"] %}
-        {% for field in fields %}
-        <tr>
-            <td><p>{{ field }}:</p></td>
-            <td><p>{{ union[field] }}</p></td>
-        </tr>
+<div class="catalog">
+    {% for title in titles %}
+    <article class="catalog-entry">
+        <h2>{{ title }}</h2>
+        {% for union in unions|selectattr("title", "==", title) %}
+        {% set url = url_for("static", filename = "%s/%s" % (datestamp, union["unix"] ~ union["ext"])) %}
+        <a href="{{ url }}">
+            {% if union["ext"] == ".webm" %}
+            <video class="media catalog-media" src="{{ url }}" autoplay muted loop></video>
+            {% else %}
+            <img class="media catalog-media" src="{{ url }}" alt="{{ "%s/%s" % (title|replace(" ", ""), datestamp) }}">
+            {% endif %}
+        </a>
+        {% autoescape false %}
+        <table>
+            {% for field in ["dev", "tools", "web"] %}
+            <tr>
+                <td><p>{{ field }}:</p></td>
+                <td><p>{{ union[field] }}</p></td>
+            </tr>
+            {% endfor %}
+        </table>
+        <p>progress:<br>{{ union["progress"] }}</p>
+        {% endautoescape %}
         {% endfor %}
-    </table>
-    <p>progress:<br>{{ union["progress"] }}</p>
-    {% endautoescape %}
+    </article>
     {% endfor %}
-</article>
-{% endfor %}
+</div>
 {% endblock content %}
