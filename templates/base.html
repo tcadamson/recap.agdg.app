@@ -11,15 +11,21 @@
         {% endblock %}
     </head>
     <body>
-        <ul>
-            <li><a href="{{ url_for("index") }}">home</a></li>
-            <li><a href="{{ url_for("archive") }}">archive</a></li>
-        </ul>
-        <div id="content">
-            {% filter indent(width = 12, first = True) %}
-            {% block content %}
-            {% endblock content %}
-            {% endfilter %}
-        </div>
+        <header>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for("index") }}">home</a></li>
+                    <li><a href="{{ url_for("archive") }}">archive</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            <section id="content">
+                {% filter indent(width = 16, first = True) %}
+                {% block content %}
+                {% endblock content %}
+                {% endfilter %}
+            </section>
+        </main>
     </body>
 </html>
