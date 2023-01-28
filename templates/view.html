@@ -2,7 +2,23 @@
 {% block title %}View: {{ datestamp }}{% endblock title %}
 {% block content %}
 <h1>{{ datestamp }}</h1>
-{% for post in posts %}
-<p>{{ post["title"] }}</p>
+{% for title in titles %}
+<article>
+    <h2>{{ title }}</h2>
+    {% for union in unions|selectattr("title", "==", title) %}
+    {% autoescape false %}
+    <table>
+        {% set fields = ["dev", "tools", "web"] %}
+        {% for field in fields %}
+        <tr>
+            <td><p>{{ field }}:</p></td>
+            <td><p>{{ union[field] }}</p></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p>progress:<br>{{ union["progress"] }}</p>
+    {% endautoescape %}
+    {% endfor %}
+</article>
 {% endfor %}
 {% endblock content %}

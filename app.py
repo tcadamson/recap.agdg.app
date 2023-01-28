@@ -43,15 +43,17 @@ def archive():
 
 @app.route("/view/<datestamp:datestamp>")
 def view(datestamp):
-    posts = []
+    unions = []
     filenames = [x.split(".")[0] for x in os.listdir(f"{STATIC_PATH}/{datestamp}")]
     connection = database.Connection(memory = True)
     cursor = connection.execute(f"select * from posts where unix in ({','.join(['?'] * len(filenames))})", filenames)
     if cursor:
         for post in cursor.fetchall():
-            posts.append(dict(connection.get_row("games", post["game_id"])) | dict(post))
+            unions.append({**connection.get_row("games", post["game_id"])} | {**post})
     connection.close()
-    return render_template("view.html", datestamp = datestamp, posts = posts)
+    # Jinja2's groupby filter always sorts by the grouper (in this case, title), discarding insertion order. As a consequence,
+    # we have to pass in the titles manually
+    return render_template("view.html", datestamp = datestamp, unions = unions, titles = dict.fromkeys([x["title"] for x in unions]))
 
 @app.errorhandler(HTTPException)
 def error(http_exception):
