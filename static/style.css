@@ -36,3 +36,17 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+.media {
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.catalog-media {
+    height: 14.625rem;
+}
+
+.catalog-entry {
+    width: 26rem;
+}

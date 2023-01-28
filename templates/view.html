@@ -3,9 +3,17 @@
 {% block content %}
 <h1>{{ datestamp }}</h1>
 {% for title in titles %}
-<article>
+<article class="catalog-entry">
     <h2>{{ title }}</h2>
     {% for union in unions|selectattr("title", "==", title) %}
+    {% set url = url_for("static", filename = "%s/%s" % (datestamp, union["unix"] ~ union["ext"])) %}
+    <a href="{{ url }}">
+        {% if union["ext"] in [".gif", ".webm"] %}
+        <video class="media catalog-media" src="{{ url }}" autoplay muted loop></video>
+        {% else %}
+        <img class="media catalog-media" src="{{ url }}" alt="{{ "%s/%s" % (title|replace(" ", ""), datestamp) }}">
+        {% endif %}
+    </a>
     {% autoescape false %}
     <table>
         {% set fields = ["dev", "tools", "web"] %}
