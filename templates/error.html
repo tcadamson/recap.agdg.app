@@ -1,5 +1,5 @@
 {% extends "base.html" %}
 {% block title %}Error: {{ http_exception["code"] }}{% endblock title %}
 {% block content %}
-<h1>{{ http_exception["code"] }}: {{ http_exception["name"]|lower }}</h1>
+<h1>{{ "%s: %s" % (http_exception["code"], http_exception["name"]|lower) }}</h1>
 {% endblock content %}

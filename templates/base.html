@@ -21,7 +21,6 @@
         </header>
         <main>
             <section id="content">
-                <h1>{% block display %}{% endblock display %}</h1>
                 {% filter indent(width = 16, first = True) %}
                 {% block content %}
                 {% endblock content %}
