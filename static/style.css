@@ -10,6 +10,8 @@
     --font-headline-line-height: 2rem;
     --font-display-size: 2.8125rem;
     --font-display-line-height: 3.25rem;
+    --gap-content: 3.125rem;
+    --width-catalog-entry: 26rem;
 }
 
 body {
@@ -37,6 +39,14 @@ a:hover {
     text-decoration: underline;
 }
 
+#content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-content);
+    padding: var(--gap-content);
+}
+
 .media {
     width: 100%;
     object-fit: cover;
@@ -44,14 +54,13 @@ a:hover {
 }
 
 .catalog {
-    display: flex;
-    flex-flow: row wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, var(--width-catalog-entry));
+    justify-content: center;
+    width: 100%;
+    gap: var(--gap-content);
 }
 
 .catalog-media {
-    height: 14.625rem;
-}
-
-.catalog-entry {
-    width: 26rem;
+    height: calc(var(--width-catalog-entry) / (16 / 9));
 }

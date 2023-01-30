@@ -4,7 +4,7 @@
 <h1>{{ datestamp }}</h1>
 <div class="catalog">
     {% for title in titles %}
-    <article class="catalog-entry">
+    <article>
         <h2>{{ title }}</h2>
         {% for union in unions|selectattr("title", "==", title) %}
         {% set url = url_for("static", filename = "%s/%s" % (datestamp, union["unix"] ~ union["ext"])) %}
