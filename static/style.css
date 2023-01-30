@@ -1,15 +1,15 @@
 :root {
     --color-background: #1f1f1f;
-    --color-surface: #28292a;
     --color-font: #e3e3e3;
-    --font-family: Inter, sans-serif;
+    --color-surface: #28292a;
+    --font-body-line-height: 1.5rem;
     --font-body-size: 1rem;
     --font-body-weight: 400;
-    --font-body-line-height: 1.5rem;
-    --font-headline-size: 1.5rem;
-    --font-headline-line-height: 2rem;
-    --font-display-size: 2.8125rem;
     --font-display-line-height: 3.25rem;
+    --font-display-size: 2.8125rem;
+    --font-family: Inter, sans-serif;
+    --font-headline-line-height: 2rem;
+    --font-headline-size: 1.5rem;
     --gap-content: 3.125rem;
     --width-catalog-entry: 26rem;
 }
@@ -40,25 +40,25 @@ a:hover {
 }
 
 #content {
+    align-items: center;
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: var(--gap-content);
     padding: var(--gap-content);
 }
 
 .media {
-    width: 100%;
     object-fit: cover;
     object-position: center;
+    width: 100%;
 }
 
 .catalog {
     display: grid;
+    gap: var(--gap-content);
     grid-template-columns: repeat(auto-fill, var(--width-catalog-entry));
     justify-content: center;
     width: 100%;
-    gap: var(--gap-content);
 }
 
 .catalog-media {
