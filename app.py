@@ -2,7 +2,7 @@ import calendar
 import os
 import re
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from werkzeug.exceptions import HTTPException
 from werkzeug.routing import BaseConverter, ValidationError
 
@@ -54,6 +54,29 @@ def view(datestamp):
     # Jinja2's groupby filter always sorts by the grouper (in this case, title), discarding insertion order. As a consequence,
     # we have to pass in the titles manually
     return render_template("view.html", datestamp = datestamp, unions = unions, titles = dict.fromkeys([x["title"] for x in unions]))
+
+@app.route("/games")
+def games():
+    rows = []
+    connection = database.Connection(memory = True)
+    cursor = connection.execute("""
+        select *
+        from (
+            select *
+            from games join posts on games.id = posts.game_id
+            where ext != ''
+            or games.id not in (
+                select game_id from posts where ext != ''
+            )
+            order by random()
+        )
+        group by id
+        order by id desc
+    """)
+    if cursor:
+        rows = cursor.fetchall()
+    connection.close()
+    return render_template("games.html", rows = rows, page = int(request.args.get("page", default = 1)))
 
 @app.errorhandler(HTTPException)
 def error(http_exception):
