@@ -14,8 +14,9 @@
         <header>
             <nav>
                 <ul>
-                    <li><a href="{{url_for("index")}}">Home</a></li>
-                    <li><a href="{{url_for("archive")}}">Archive</a></li>
+                    {% for endpoint in ["index", "archive", "games"] %}
+                    <li><a href="{{url_for(endpoint)}}">{{endpoint | replace("index", "home") | capitalize}}</a></li>
+                    {% endfor %}
                 </ul>
             </nav>
         </header>
