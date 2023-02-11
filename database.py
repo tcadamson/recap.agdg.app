@@ -37,7 +37,7 @@ class Connection:
             self.source = source
         self.source.row_factory = sqlite3.Row
         # Enable foreign key constraints
-        self.source.execute("pragma foreign_keys = on;")
+        self.source.execute("pragma foreign_keys = on")
 
     def execute(self, query, parameters = ()):
         """
@@ -70,17 +70,17 @@ class Connection:
         } | kwargs
         query_columns = ",".join(row_data.keys())
         query_placeholders = ":" + ",:".join(row_data.keys())
-        cursor = self.execute(f"insert into {table} ({query_columns}) values ({query_placeholders});", row_data)
+        cursor = self.execute(f"insert into {table} ({query_columns}) values ({query_placeholders})", row_data)
         if cursor:
             # https://peps.python.org/pep-0249/#lastrowid
             return self.get_row(table, cursor.lastrowid)
 
     def update_row(self, table, row_id, **kwargs):
         query_column_pairs = ",".join([f"{x}=?" for x in kwargs.keys()])
-        self.execute(f"update {table} set {query_column_pairs} where id = ?;", tuple(kwargs.values()) + (row_id,))
+        self.execute(f"update {table} set {query_column_pairs} where id = ?", tuple(kwargs.values()) + (row_id,))
 
     def get_row(self, table, row_id = None, **kwargs):
-        return self.execute(f"select * from {table} where id = ?;", (row_id or self.get_id(table, **kwargs),)).fetchone()
+        return self.execute(f"select * from {table} where id = ?", (row_id or self.get_id(table, **kwargs),)).fetchone()
 
     def get_id(self, table, **kwargs):
         """
@@ -92,7 +92,7 @@ class Connection:
         :return: Row ID (on successful match)
         """
         key = next(iter(kwargs))
-        cursor = self.execute(f"select id from {table} where {key} = :{key};", kwargs).fetchone()
+        cursor = self.execute(f"select id from {table} where {key} = :{key}", kwargs).fetchone()
         if cursor:
             return cursor["id"]
 
