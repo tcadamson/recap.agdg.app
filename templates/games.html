@@ -4,7 +4,8 @@
 <h1>{{ self.title() }}</h1>
 {% call(row) paginate(rows, "games", current_page = page) %}
 <article>
-    <h2>{{ row["title"] }} {{ row["unix"] }}</h2>
+    <h2>{{ row["title"] }}</h2>
+    {{ media(row, "catalog")|indent }}
 </article>
 {% endcall %}
 {% endblock content %}
