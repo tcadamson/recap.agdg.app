@@ -30,7 +30,7 @@ app.jinja_options["lstrip_blocks"] = True
 
 @app.route("/")
 def index():
-    return render_template("index.html", datestamp = scraper.decode_unix())
+    return render_template("index.html.jinja", datestamp = scraper.decode_unix())
 
 @app.route("/archive")
 def archive():
@@ -39,7 +39,7 @@ def archive():
         datestamp_split_match = re.search(r"(?P<year>\d{2})(?P<month>\d{2})(?P<week>\d)", folder)
         if datestamp_split_match:
             recaps.append({k: datestamp_split_match.group(k) for k in datestamp_split_match.groupdict().keys()})
-    return render_template("archive.html", recaps = recaps)
+    return render_template("archive.html.jinja", recaps = recaps)
 
 @app.route("/view/<datestamp:datestamp>")
 def view(datestamp):
@@ -56,7 +56,7 @@ def view(datestamp):
     connection.close()
     # Jinja2's groupby filter always sorts by the grouper (in this case, title), discarding insertion order. As a consequence,
     # we have to pass in the titles manually
-    return render_template("view.html", datestamp = datestamp, rows = rows, titles = dict.fromkeys([x["title"] for x in rows]))
+    return render_template("view.html.jinja", datestamp = datestamp, rows = rows, titles = dict.fromkeys([x["title"] for x in rows]))
 
 @app.route("/games")
 def games():
@@ -79,11 +79,11 @@ def games():
     if cursor:
         rows = cursor.fetchall()
     connection.close()
-    return render_template("games.html", rows = rows, page = int(request.args.get("page", default = 1)))
+    return render_template("games.html.jinja", rows = rows, page = int(request.args.get("page", default = 1)))
 
 @app.errorhandler(HTTPException)
 def error(http_exception):
-    return render_template("error.html", http_exception = http_exception), http_exception.code
+    return render_template("error.html.jinja", http_exception = http_exception), http_exception.code
 
 @app.template_filter()
 def month_name(month_index):
