@@ -151,7 +151,7 @@ def process_post(post, connection):
                 game_id = game_id,
                 unix = post.get("tim", post["time"]),
                 ext = post.get("ext", ""),
-                progress = re.search(r"^(?:<br>)*(.+)$", re.split(field_pattern, content)[-1]).group(1)
+                progress = re.search(r"^(?:<br>)*(?P<progress>.+)$", re.split(field_pattern, content)[-1]).group("progress")
             )
         except AttributeError:
             # Progress not found

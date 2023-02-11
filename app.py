@@ -94,10 +94,10 @@ def decode_unix(unix):
     datestamp = scraper.decode_unix(unix)
     # Some legacy recaps have entries that don't "belong", i.e. the unix timestamp doesn't match the datestamp. This is because the
     # previous, manual scraping process wasn't always on time. As a consequence, we may have to search for the correct datestamp
-    datestamp_pattern = r"(\d+)(?=/)"
+    datestamp_pattern = r"(?P<datestamp>\d+)(?=/)"
     path = f"{STATIC_PATH}/{datestamp}/{unix}.*"
     if not glob.glob(path):
         actual_path = glob.glob(re.sub(datestamp_pattern, "*", path))
         if actual_path:
-            return re.search(datestamp_pattern, next(iter(actual_path))).group(1)
+            return re.search(datestamp_pattern, next(iter(actual_path))).group("datestamp")
     return datestamp
