@@ -1,6 +1,5 @@
 import calendar
 import glob
-import os
 import re
 
 from flask import Flask, render_template, request
@@ -18,7 +17,7 @@ class DatestampConverter(BaseConverter):
     def to_python(self, value):
         # Overriding to_python isn't actually necessary (we don't transform the datestamp into a different object), however we need
         # it to perform additional validation not possible through regex
-        if os.path.exists(f"{STATIC_PATH}/{value}"):
+        if glob.glob(f"{STATIC_PATH}/{value}"):
             return value
         raise ValidationError
 
@@ -36,16 +35,16 @@ def index():
 @app.route("/archive")
 def archive():
     recaps = []
-    for datestamp in [x.name for x in os.scandir(STATIC_PATH) if x.is_dir()]:
-        datestamp_match = re.search(r"^(?P<year>\d{2})(?P<month>\d{2})(?P<week>\d)$", datestamp)
-        if datestamp_match:
-            recaps.append({k: datestamp_match.group(k) for k in datestamp_match.groupdict().keys()})
+    for folder in glob.glob(f"{STATIC_PATH}/*/"):
+        datestamp_split_match = re.search(r"(?P<year>\d{2})(?P<month>\d{2})(?P<week>\d)", folder)
+        if datestamp_split_match:
+            recaps.append({k: datestamp_split_match.group(k) for k in datestamp_split_match.groupdict().keys()})
     return render_template("archive.html", recaps = recaps)
 
 @app.route("/view/<datestamp:datestamp>")
 def view(datestamp):
     rows = []
-    filenames = [x.split(".")[0] for x in os.listdir(f"{STATIC_PATH}/{datestamp}")]
+    filenames = [re.sub(r".+/(\d+).+", r"\1", x) for x in glob.glob(f"{STATIC_PATH}/{datestamp}/*")]
     connection = database.Connection(memory = True)
     cursor = connection.execute(f"""
         select *
