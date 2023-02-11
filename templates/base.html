@@ -44,9 +44,8 @@
         </header>
         <main>
             <section id="content">
-                {% filter indent(width = 16, first = True) %}
-                {% block content %}
-                {% endblock content %}
+                {% filter indent(16, True) %}
+                {% block content %}{% endblock content %}
                 {% endfilter %}
             </section>
         </main>
