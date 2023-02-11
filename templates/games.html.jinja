@@ -6,10 +6,11 @@
 
 {% block content %}
 <h1>{{self.title()}}</h1>
-{% call(row) macros.paginate(rows, "games", current_page = page) %}
+{% call(row) macros.pagination(rows, page) %}
 <article>
     <h2>{{row["title"]}}</h2>
     {{macros.media(row, "catalog") | indent}}
 </article>
 {% endcall %}
+{{macros.pagination_drawer(rows, page, "games")}}
 {% endblock content %}
