@@ -16,12 +16,12 @@
         <table>
             {% for field in ["dev", "tools", "web"] %}
             <tr>
-                <td><p>{{field}}:</p></td>
+                <td><p>{{field | capitalize}}:</p></td>
                 <td><p>{{row[field]}}</p></td>
             </tr>
             {% endfor %}
         </table>
-        <p>progress:<br>{{row["progress"]}}</p>
+        <p>Progress:<br>{{row["progress"]}}</p>
         {% endautoescape %}
         {% endfor %}
     </article>
