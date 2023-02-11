@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "macros.jinja" as macros %}
 {% block title %}View: {{ datestamp }}{% endblock title %}
 {% block content %}
 <h1>{{ datestamp }}</h1>
@@ -7,7 +8,7 @@
     <article>
         <h2>{{ title }}</h2>
         {% for row in rows|selectattr("title", "==", title) %}
-        {{ media(row, "catalog")|indent(8) }}
+        {{ macros.media(row, "catalog")|indent(8) }}
         {% autoescape false %}
         <table>
             {% for field in ["dev", "tools", "web"] %}
