@@ -1,24 +1,27 @@
 {% extends "base.html" %}
+
 {% import "macros.jinja" as macros %}
-{% block title %}View: {{ datestamp }}{% endblock title %}
+
+{% block title %}View: {{datestamp}}{% endblock title %}
+
 {% block content %}
-<h1>{{ datestamp }}</h1>
+<h1>{{datestamp}}</h1>
 <div class="catalog">
     {% for title in titles %}
     <article>
-        <h2>{{ title }}</h2>
-        {% for row in rows|selectattr("title", "==", title) %}
-        {{ macros.media(row, "catalog")|indent(8) }}
+        <h2>{{title}}</h2>
+        {% for row in rows | selectattr("title", "==", title) %}
+        {{macros.media(row, "catalog") | indent(8)}}
         {% autoescape false %}
         <table>
             {% for field in ["dev", "tools", "web"] %}
             <tr>
-                <td><p>{{ field }}:</p></td>
-                <td><p>{{ row[field] }}</p></td>
+                <td><p>{{field}}:</p></td>
+                <td><p>{{row[field]}}</p></td>
             </tr>
             {% endfor %}
         </table>
-        <p>progress:<br>{{ row["progress"] }}</p>
+        <p>progress:<br>{{row["progress"]}}</p>
         {% endautoescape %}
         {% endfor %}
     </article>

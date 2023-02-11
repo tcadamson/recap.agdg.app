@@ -1,12 +1,15 @@
 {% extends "base.html" %}
+
 {% import "macros.jinja" as macros %}
+
 {% block title %}Games{% endblock title %}
+
 {% block content %}
-<h1>{{ self.title() }}</h1>
+<h1>{{self.title()}}</h1>
 {% call(row) macros.paginate(rows, "games", current_page = page) %}
 <article>
-    <h2>{{ row["title"] }}</h2>
-    {{ macros.media(row, "catalog")|indent }}
+    <h2>{{row["title"]}}</h2>
+    {{macros.media(row, "catalog") | indent}}
 </article>
 {% endcall %}
 {% endblock content %}

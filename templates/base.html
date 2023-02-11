@@ -5,8 +5,8 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-        <link rel="stylesheet" href="{{ url_for("static", filename="reset.css") }}"/>
-        <link rel="stylesheet" href="{{ url_for("static", filename="style.css") }}"/>
+        <link rel="stylesheet" href="{{url_for("static", filename="reset.css")}}"/>
+        <link rel="stylesheet" href="{{url_for("static", filename="style.css")}}"/>
         <title>{% block title %}{% endblock title %} | Recap</title>
         {% endblock %}
     </head>
@@ -14,8 +14,8 @@
         <header>
             <nav>
                 <ul>
-                    <li><a href="{{ url_for("index") }}">home</a></li>
-                    <li><a href="{{ url_for("archive") }}">archive</a></li>
+                    <li><a href="{{url_for("index")}}">home</a></li>
+                    <li><a href="{{url_for("archive")}}">archive</a></li>
                 </ul>
             </nav>
         </header>

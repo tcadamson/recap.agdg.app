@@ -1,24 +1,25 @@
 {% macro paginate(rows, endpoint, current_page = 1, per_page = 20, seek = 4) %}
-{% set pages = rows|batch(per_page)|list %}
+{% set pages = rows | batch(per_page) | list %}
 {% for row in pages[current_page - 1] %}
-{{ caller(row) }}
+{{caller(row)}}
 {%- endfor %}
 <ol>
-    {% for i in range([1, current_page - seek]|max, [pages|length, current_page + seek]|min + 1) %}
-    <li><a href="{{ url_for(endpoint, page = i) }}">{{ i }}</a></li>
+    {% for i in range([1, current_page - seek] | max, [pages | length, current_page + seek] | min + 1) %}
+    <li><a href="{{url_for(endpoint, page = i)}}">{{i}}</a></li>
     {% endfor %}
 </ol>
 {% endmacro %}
 
 {% macro media(row, class_prefix) %}
-{% set datestamp = row["unix"]|decode_unix %}
-{% set class = ("media %s" % (class_prefix ~ "-media" if class_prefix))|trim %}
+{% set datestamp = row["unix"] | decode_unix %}
+{% set class = "media" %}
+{% set class = "%s %s-media" % (class, class_prefix) if class_prefix else class %}
 {% set url = url_for("static", filename = ("%s/%s" % (datestamp, row["unix"] ~ row["ext"])) if row["ext"] else "default.png") %}
-<a href="{{ url }}">
+<a href="{{url}}">
     {% if row["ext"] == ".webm" %}
-    <video class="{{ class }}" src="{{ url }}" autoplay muted loop></video>
+    <video class="{{class}}" src="{{url}}" autoplay muted loop></video>
     {% else %}
-    <img class="{{ class }}" src="{{ url }}" alt="{{ "%s/%s" % (datestamp, row["title"].split()|join) }}">
+    <img class="{{class}}" src="{{url}}" alt="{{"%s/%s" % (datestamp, row["title"].split() | join)}}">
     {% endif %}
 </a>
 {%- endmacro %}
