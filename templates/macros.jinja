@@ -21,7 +21,7 @@
     {% if row["ext"] == ".webm" %}
     <video class="{{class}}" src="{{url}}" autoplay muted loop></video>
     {% else %}
-    <img class="{{class}}" src="{{url}}" alt="{{"%s/%s" % (datestamp, row["title"].split() | join)}}">
+    <img class="{{class}}" src="{{url}}" alt="">
     {% endif %}
 </a>
 {%- endmacro %}
