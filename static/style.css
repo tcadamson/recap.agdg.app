@@ -10,8 +10,10 @@
     --font-family: Inter, sans-serif;
     --font-headline-line-height: 2rem;
     --font-headline-size: 1.5rem;
+    --gap-catalog-entry: 1.25rem;
     --gap-content: 3.125rem;
     --width-catalog-entry: 26rem;
+    --width-catalog-field: 3.675rem;
 }
 
 body {
@@ -39,6 +41,17 @@ a:hover {
     text-decoration: underline;
 }
 
+table {
+    border-spacing: 0;
+    table-layout: fixed;
+    width: 100%;
+}
+
+td {
+    padding: 0;
+    vertical-align: top;
+}
+
 #content {
     align-items: center;
     display: flex;
@@ -63,4 +76,18 @@ a:hover {
 
 .catalog-media {
     height: calc(var(--width-catalog-entry) / (16 / 9));
+}
+
+.catalog-entry {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-catalog-entry);
+}
+
+.catalog-title {
+    text-align: center;
+}
+
+.catalog-field {
+    width: var(--width-catalog-field);
 }

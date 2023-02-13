@@ -8,8 +8,16 @@
 <h1>{{self.title()}}</h1>
 <div class="catalog">
     {% call(row) macros.pagination(rows, page) %}
-    <article>
-        <h2>{{row["title"]}}</h2>
+    <article class="catalog-entry">
+        <h2 class="catalog-title">{{row["title"]}}</h2>
+        <table>
+            {% for field in ["dev", "tools", "web"] %}
+            <tr>
+                <td class="catalog-field"><p>{{field | capitalize}}:</p></td>
+                <td><p>{{row[field]}}</p></td>
+            </tr>
+            {% endfor %}
+        </table>
         {{macros.media(row, "catalog") | indent(8)}}
     </article>
     {% endcall %}
