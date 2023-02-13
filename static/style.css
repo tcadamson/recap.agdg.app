@@ -52,12 +52,18 @@ td {
     vertical-align: top;
 }
 
+#container {
+    display: flex;
+    justify-content: center;
+}
+
 #content {
     align-items: center;
     display: flex;
     flex-direction: column;
     gap: var(--gap-content);
     padding: var(--gap-content);
+    width: 75%;
 }
 
 .media {
