@@ -65,7 +65,7 @@ def games():
     cursor = connection.execute("""
         select *
         from (
-            select *
+            select games.id, title, dev, tools, web, unix, ext
             from games join posts on games.id = posts.game_id
             where ext != ''
             or games.id not in (

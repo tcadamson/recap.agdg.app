@@ -27,3 +27,23 @@
     {% endif %}
 </a>
 {%- endmacro %}
+
+{% macro catalog_entry(rows, title) %}
+<article class="catalog-entry">
+    <h2 class="catalog-title">{{title}}</h2>
+    {% for row in rows | selectattr("title", "==", title) %}
+    <table>
+        {% for field in ["dev", "tools", "web"] %}
+        <tr>
+            <td class="catalog-field"><p>{{field | capitalize}}:</p></td>
+            <td><p>{{row[field]}}</p></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {{media(row, "catalog") | indent}}
+    {% if row["progress"] is defined %}
+    <p>{{row["progress"]}}</p>
+    {% endif %}
+    {% endfor %}
+</article>
+{%- endmacro %}

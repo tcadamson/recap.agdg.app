@@ -8,23 +8,7 @@
 <h1>{{datestamp}}</h1>
 <div class="catalog">
     {% for title in titles %}
-    <article>
-        <h2>{{title}}</h2>
-        {% for row in rows | selectattr("title", "==", title) %}
-        {{macros.media(row, "catalog") | indent(8)}}
-        {% autoescape false %}
-        <table>
-            {% for field in ["dev", "tools", "web"] %}
-            <tr>
-                <td><p>{{field | capitalize}}:</p></td>
-                <td><p>{{row[field]}}</p></td>
-            </tr>
-            {% endfor %}
-        </table>
-        <p>Progress:<br>{{row["progress"]}}</p>
-        {% endautoescape %}
-        {% endfor %}
-    </article>
+    {{macros.catalog_entry(rows, title) | indent}}
     {% endfor %}
 </div>
 {% endblock content %}
