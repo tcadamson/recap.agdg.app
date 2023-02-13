@@ -33,7 +33,7 @@
     <h2 class="catalog-title">{{title}}</h2>
     {% for row in rows | selectattr("title", "==", title) %}
     {{media(row, "catalog") | indent}}
-    {% if [row["dev"], row["tools"], row["web"]] | join %}
+    {% if [row["dev"], row["tools"], row["web"]] | join and loop.first %}
     <table>
         {% for field in ["dev", "tools", "web"] if row[field] %}
         <tr>
