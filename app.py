@@ -48,8 +48,11 @@ def view(datestamp):
     connection = database.Connection(memory = True)
     cursor = connection.execute(f"""
         select *
-        from games join posts on games.id = posts.game_id
-        where unix in ({','.join(['?'] * len(filenames))})
+        from games
+        join posts on
+            games.id = posts.game_id
+        where unix in
+            ({','.join(['?'] * len(filenames))})
     """, filenames)
     if cursor:
         rows = cursor.fetchall()
@@ -66,7 +69,9 @@ def games():
         select *
         from (
             select games.id, title, dev, tools, web, unix, ext
-            from games join posts on games.id = posts.game_id
+            from games
+            join posts on
+                games.id = posts.game_id
             where ext != ''
             or games.id not in (
                 select game_id from posts where ext != ''
