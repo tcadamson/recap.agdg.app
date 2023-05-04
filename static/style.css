@@ -11,7 +11,8 @@
     --font-headline-line-height: 2rem;
     --font-headline-size: 1.5rem;
     --gap-catalog-entry: 1.25rem;
-    --gap-content: 3.125rem;
+    --gap-content-catalog: 3.125rem;
+    --gap-content: 6.25rem;
     --width-catalog-entry: 26rem;
     --width-catalog-field: 3.675rem;
 }
@@ -62,7 +63,7 @@ td {
     display: flex;
     flex-direction: column;
     gap: var(--gap-content);
-    padding: var(--gap-content);
+    padding: var(--gap-content) 0;
     width: 75%;
 }
 
@@ -74,7 +75,7 @@ td {
 
 .catalog {
     display: grid;
-    gap: var(--gap-content);
+    gap: var(--gap-content-catalog);
     grid-template-columns: repeat(auto-fill, var(--width-catalog-entry));
     justify-content: center;
     width: 100%;
