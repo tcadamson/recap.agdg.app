@@ -2,10 +2,10 @@
 
 {% import "macros.jinja" as macros %}
 
-{% block title %}View: {{datestamp}}{% endblock title %}
+{% block title %}{{datestamp | semantic_datestamp}}{% endblock title %}
 
 {% block content %}
-<h1>{{datestamp}}</h1>
+<h1>{{self.title()}}</h1>
 <div class="catalog">
     {% for title in titles %}
     {{macros.catalog_entry(rows, title) | indent}}

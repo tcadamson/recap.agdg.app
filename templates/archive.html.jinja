@@ -4,12 +4,12 @@
 
 {% block content %}
 <h1>{{self.title()}}</h1>
-{% for year, datestamps in recaps | groupby("year") | reverse %}
+{% for year, datestamps in datestamps | groupby("year") | reverse %}
 <article>
-    <h2>{{2000 + year | int}}</h2>
+    <h2>{{year | full_year}}</h2>
     {% for month, datestamps in datestamps | groupby("month") | reverse %}
     <section>
-        <h2>{{month | month_name}}</h2>
+        <h2>{{month | calendar_month}}</h2>
         {% for datestamp in datestamps | reverse %}
         <p><a href="{{url_for("view", datestamp = datestamp.values() | join)}}">week {{datestamp["week"]}}</a></p>
         {% endfor %}

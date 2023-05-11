@@ -28,18 +28,23 @@ app.url_map.converters["datestamp"] = DatestampConverter
 app.jinja_options["trim_blocks"] = True
 app.jinja_options["lstrip_blocks"] = True
 
+def split_datestamp(datestamp):
+    split_match = re.search(r"(?P<year>\d{2})(?P<month>\d{2})(?P<week>\d)", str(datestamp))
+    if split_match:
+        return {k: split_match.group(k) for k in split_match.groupdict().keys()}
+
 @app.route("/")
 def index():
     return render_template("index.html.jinja", datestamp = scraper.decode_unix())
 
 @app.route("/archive")
 def archive():
-    recaps = []
+    datestamps = []
     for folder in glob.glob(f"{STATIC_PATH}/*/"):
-        datestamp_split_match = re.search(r"(?P<year>\d{2})(?P<month>\d{2})(?P<week>\d)", folder)
-        if datestamp_split_match:
-            recaps.append({k: datestamp_split_match.group(k) for k in datestamp_split_match.groupdict().keys()})
-    return render_template("archive.html.jinja", recaps = recaps)
+        datestamp_data = split_datestamp(folder)
+        if datestamp_data:
+            datestamps.append(datestamp_data)
+    return render_template("archive.html.jinja", datestamps = datestamps)
 
 @app.route("/view/<datestamp:datestamp>")
 def view(datestamp):
@@ -91,7 +96,11 @@ def error(http_exception):
     return render_template("error.html.jinja", http_exception = http_exception), http_exception.code
 
 @app.template_filter()
-def month_name(month_index):
+def full_year(year):
+    return 2000 + int(year)
+
+@app.template_filter()
+def calendar_month(month_index):
     return calendar.month_name[int(month_index)]
 
 @app.template_filter()
@@ -106,3 +115,9 @@ def decode_unix(unix):
         if actual_path:
             return re.search(datestamp_pattern, next(iter(actual_path))).group("datestamp")
     return datestamp
+
+@app.template_filter()
+def semantic_datestamp(datestamp):
+    datestamp_data = split_datestamp(datestamp)
+    if datestamp_data:
+        return f"{calendar_month(datestamp_data['month'])} {full_year(datestamp_data['year'])}, Week {datestamp_data['week']}"
