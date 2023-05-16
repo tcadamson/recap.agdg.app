@@ -28,10 +28,10 @@
 </a>
 {%- endmacro %}
 
-{% macro catalog_entry(rows, title) %}
+{% macro catalog_entry(rows, title, title_url) %}
 <article class="catalog-entry">
-    <h2 class="catalog-title">{{title}}</h2>
-    {% for row in rows | selectattr("title", "==", title) %}
+    <h2 class="catalog-title"><a href="{{title_url}}">{{title}}</a></h2>
+    {% for row in rows %}
     {{media(row, "catalog") | indent}}
     {% if [row["dev"], row["tools"], row["web"]] | join and loop.first %}
     <table>
@@ -43,7 +43,7 @@
         {% endfor %}
     </table>
     {% endif %}
-    {% if row["progress"] is defined %}
+    {% if row["progress"] %}
     <p>{{row["progress"]}}</p>
     {% endif %}
     {% endfor %}

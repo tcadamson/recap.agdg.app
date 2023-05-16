@@ -2,7 +2,7 @@ import calendar
 import glob
 import re
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, abort
 from werkzeug.exceptions import HTTPException
 from werkzeug.routing import BaseConverter, ValidationError
 
@@ -21,9 +21,18 @@ class DatestampConverter(BaseConverter):
             return value
         raise ValidationError
 
+class TitleConverter(BaseConverter):
+    def to_python(self, value):
+        connection = database.Connection(memory = True)
+        if connection.get_row("games", title = value):
+            connection.close()
+            return value
+        raise ValidationError
+
 app = Flask(__name__)
 # https://werkzeug.palletsprojects.com/en/2.2.x/routing/#custom-converters
 app.url_map.converters["datestamp"] = DatestampConverter
+app.url_map.converters["title"] = TitleConverter
 # https://jinja.palletsprojects.com/en/3.0.x/templates/#whitespace-control
 app.jinja_options["trim_blocks"] = True
 app.jinja_options["lstrip_blocks"] = True
@@ -39,12 +48,7 @@ def index():
 
 @app.route("/archive")
 def archive():
-    datestamps = []
-    for folder in glob.glob(f"{STATIC_PATH}/*/"):
-        datestamp_data = split_datestamp(folder)
-        if datestamp_data:
-            datestamps.append(datestamp_data)
-    return render_template("archive.html.jinja", datestamps = datestamps)
+    return render_template("archive.html.jinja", datestamps = [split_datestamp(x) for x in glob.glob(f"{STATIC_PATH}/*/") if x])
 
 @app.route("/view/<datestamp:datestamp>")
 def view(datestamp):
@@ -62,9 +66,7 @@ def view(datestamp):
     if cursor:
         rows = cursor.fetchall()
     connection.close()
-    # Jinja2's groupby filter always sorts by the grouper (in this case, title), discarding insertion order. As a consequence,
-    # we have to pass in the titles manually
-    return render_template("view.html.jinja", datestamp = datestamp, rows = rows, titles = dict.fromkeys([x["title"] for x in rows]))
+    return render_template("view.html.jinja", datestamp = datestamp, rows = rows)
 
 @app.route("/games")
 def games():
@@ -90,6 +92,17 @@ def games():
         rows = cursor.fetchall()
     connection.close()
     return render_template("games.html.jinja", rows = rows, page = int(request.args.get("page", default = 1)))
+
+@app.route("/games/<title:title>")
+def game(title):
+    rows = []
+    connection = database.Connection(memory = True)
+    game_data = connection.get_row("games", title = title)
+    cursor = connection.execute(f"select * from posts where game_id = ? order by unix desc", (game_data["id"],))
+    if cursor:
+        rows = cursor.fetchall()
+    connection.close()
+    return render_template("game.html.jinja", rows = rows, game_data = game_data)
 
 @app.errorhandler(HTTPException)
 def error(http_exception):
@@ -121,3 +134,7 @@ def semantic_datestamp(datestamp):
     datestamp_data = split_datestamp(datestamp)
     if datestamp_data:
         return f"{calendar_month(datestamp_data['month'])} {full_year(datestamp_data['year'])}, Week {datestamp_data['week']}"
+
+@app.template_test()
+def matches_datestamp(unix, datestamp):
+    return decode_unix(unix) == datestamp
