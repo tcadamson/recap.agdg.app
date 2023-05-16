@@ -1,4 +1,5 @@
 :root {
+    --border-radius: 0.5625rem;
     --color-background: #1f1f1f;
     --color-font: #e3e3e3;
     --color-surface: #28292a;
@@ -10,7 +11,7 @@
     --font-family: Inter, sans-serif;
     --font-headline-line-height: 2rem;
     --font-headline-size: 1.5rem;
-    --gap-catalog-entry: 1.25rem;
+    --gap-catalog-entry: 1.65rem;
     --gap-content-catalog: 3.125rem;
     --gap-content: 6.25rem;
     --width-catalog-entry: 26rem;
@@ -85,7 +86,7 @@ td {
     height: calc(var(--width-catalog-entry) / (16 / 9));
 }
 
-.catalog-entry {
+.catalog-content {
     display: flex;
     flex-direction: column;
     gap: var(--gap-catalog-entry);
@@ -97,4 +98,10 @@ td {
 
 .catalog-field {
     width: var(--width-catalog-field);
+}
+
+.catalog-header {
+    background: var(--color-surface);
+    border-radius: var(--border-radius);
+    padding: var(--gap-catalog-entry)
 }
