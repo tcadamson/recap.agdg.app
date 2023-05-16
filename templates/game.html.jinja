@@ -6,13 +6,15 @@
 
 {% block content %}
 <h1>{{self.title()}}</h1>
+{% set datestamps = rows | map(attribute = "unix") | map("decode_unix") | unique | list %}
 <div class="catalog">
-    {% for datestamp in rows | map(attribute = "unix") | map("decode_unix") | unique %}
+    {% call(datestamp) macros.pagination(datestamps, page) %}
     {{
         macros.catalog_entry(rows | selectattr("unix", "matches_datestamp", datestamp),
         datestamp | semantic_datestamp,
         url_for("view", datestamp = datestamp)) | indent
     }}
-    {% endfor %}
+    {% endcall %}
 </div>
+{% block drawer scoped %}{{macros.pagination_drawer(datestamps, page)}}{% endblock drawer %}
 {% endblock content %}

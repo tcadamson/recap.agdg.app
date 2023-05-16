@@ -20,6 +20,9 @@ def split_datestamp(datestamp):
     if split_match:
         return {k: split_match.group(k) for k in split_match.groupdict().keys()}
 
+def get_page():
+    return int(request.args.get("page", default = 1))
+
 @app.route("/")
 def index():
     return render_template("index.html.jinja", datestamp = scraper.decode_unix())
@@ -71,7 +74,7 @@ def games():
     if cursor:
         rows = cursor.fetchall()
     connection.close()
-    return render_template("games.html.jinja", rows = rows, page = int(request.args.get("page", default = 1)))
+    return render_template("games.html.jinja", rows = rows, page = get_page())
 
 @app.route("/games/<title>")
 def game(title):
@@ -84,7 +87,7 @@ def game(title):
     if cursor:
         rows = cursor.fetchall()
     connection.close()
-    return render_template("game.html.jinja", rows = rows, game_data = game_data)
+    return render_template("game.html.jinja", rows = rows, page = get_page(), game_data = game_data)
 
 @app.errorhandler(HTTPException)
 def error(http_exception):
