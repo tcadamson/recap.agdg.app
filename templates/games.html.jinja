@@ -11,5 +11,5 @@
     {{macros.catalog_entry(rows | selectattr("title", "==", row["title"]), row["title"], url_for("game", title = row["title"])) | indent}}
     {% endcall %}
 </div>
-{{macros.pagination_drawer(rows, page, "games")}}
+{{macros.pagination_drawer(rows, page)}}
 {% endblock content %}

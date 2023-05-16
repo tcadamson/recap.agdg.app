@@ -6,10 +6,10 @@
 {%- endfor %}
 {% endmacro %}
 
-{% macro pagination_drawer(rows, page, endpoint, delta = 4) %}
+{% macro pagination_drawer(rows, page, delta = 4) %}
 <ol>
     {% for i in range([1, page - delta] | max, [rows | batch(per_page) | list | length, page + delta] | min + 1) %}
-    <li><a href="{{url_for(endpoint, page = i)}}">{{i}}</a></li>
+    <li><a href="{{url_for(request.endpoint, page = i, **request.view_args)}}">{{i}}</a></li>
     {% endfor %}
 </ol>
 {%- endmacro %}
