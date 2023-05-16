@@ -1,5 +1,6 @@
 import calendar
 import glob
+import pathlib
 import re
 
 from flask import Flask, render_template, request, abort
@@ -9,6 +10,11 @@ import database
 import scraper
 
 STATIC_PATH = "static"
+# Some legacy recaps have entries that don't "belong", i.e. the unix timestamp doesn't match the datestamp. This is because the
+# previous, manual scraping process wasn't always on time. As a consequence, we may have to search for the correct datestamp
+CORRECTED_DATESTAMP_MAP = {
+    int(k.stem): int(k.parent.stem) for k in pathlib.Path(STATIC_PATH).rglob("*/*") if str(scraper.decode_unix(k.stem)) != k.parent.stem
+}
 
 app = Flask(__name__)
 # https://jinja.palletsprojects.com/en/3.0.x/templates/#whitespace-control
@@ -103,16 +109,7 @@ def calendar_month(month_index):
 
 @app.template_filter()
 def decode_unix(unix):
-    datestamp = scraper.decode_unix(unix)
-    # Some legacy recaps have entries that don't "belong", i.e. the unix timestamp doesn't match the datestamp. This is because the
-    # previous, manual scraping process wasn't always on time. As a consequence, we may have to search for the correct datestamp
-    datestamp_pattern = r"(?P<datestamp>\d+)(?=/)"
-    path = f"{STATIC_PATH}/{datestamp}/{unix}.*"
-    if not glob.glob(path):
-        actual_path = glob.glob(re.sub(datestamp_pattern, "*", path))
-        if actual_path:
-            return re.search(datestamp_pattern, next(iter(actual_path))).group("datestamp")
-    return datestamp
+    return CORRECTED_DATESTAMP_MAP.get(unix, scraper.decode_unix(unix))
 
 @app.template_filter()
 def semantic_datestamp(datestamp):
