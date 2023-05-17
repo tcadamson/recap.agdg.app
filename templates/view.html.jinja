@@ -8,7 +8,7 @@
 <h1>{{self.title()}}</h1>
 <div class="catalog">
     {% for title in rows | map(attribute = "title") %}
-    {{macros.catalog_entry(rows | selectattr("title", "==", title), title, url_for("game", title = title)) | indent}}
+    {{macros.catalog_entry_common(rows, title)}}
     {% endfor %}
 </div>
 {% endblock content %}

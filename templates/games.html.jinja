@@ -9,7 +9,7 @@
 {% set titles = rows | map(attribute = "title") | list %}
 <div class="catalog">
     {% call(title) macros.pagination(titles, page) %}
-    {{macros.catalog_entry(rows | selectattr("title", "==", title), title, url_for("game", title = title)) | indent}}
+    {{macros.catalog_entry_common(rows, title)}}
     {% endcall %}
 </div>
 {% block drawer scoped %}{{macros.pagination_drawer(titles, page)}}{% endblock drawer %}

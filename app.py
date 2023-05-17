@@ -82,14 +82,14 @@ def games():
     connection.close()
     return render_template("games.html.jinja", rows = rows, page = get_page())
 
-@app.route("/games/<title>")
-def game(title):
+@app.route("/games/<int:game_id>")
+def game(game_id):
     rows = []
     connection = database.Connection(memory = True)
-    game_data = connection.get_row("games", title = title)
+    game_data = connection.get_row("games", game_id)
     if not game_data:
         abort(404)
-    cursor = connection.execute(f"select * from posts where game_id = ? order by unix desc", (game_data["id"],))
+    cursor = connection.execute(f"select * from posts where game_id = ? order by unix desc", (game_id,))
     if cursor:
         rows = cursor.fetchall()
     connection.close()

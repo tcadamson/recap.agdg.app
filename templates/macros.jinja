@@ -56,3 +56,8 @@
     {% endfor %}
 </article>
 {%- endmacro %}
+
+{% macro catalog_entry_common(rows, title) %}
+{% set rows = rows | selectattr("title", "==", title) | list %}
+{{catalog_entry(rows, title, url_for("game", game_id = rows | map(attribute = "id") | first)) | indent}}
+{%- endmacro %}

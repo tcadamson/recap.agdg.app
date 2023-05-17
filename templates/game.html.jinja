@@ -10,9 +10,11 @@
 <div class="catalog">
     {% call(datestamp) macros.pagination(datestamps, page) %}
     {{
-        macros.catalog_entry(rows | selectattr("unix", "matches_datestamp", datestamp),
-        datestamp | semantic_datestamp,
-        url_for("view", datestamp = datestamp)) | indent
+        macros.catalog_entry(
+            rows | selectattr("unix", "matches_datestamp", datestamp),
+            datestamp | semantic_datestamp,
+            url_for("view", datestamp = datestamp)
+        ) | indent
     }}
     {% endcall %}
 </div>
