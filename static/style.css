@@ -54,6 +54,11 @@ td {
     vertical-align: top;
 }
 
+ul, ol {
+    list-style: none;
+    padding: 0;
+}
+
 #container {
     display: flex;
     justify-content: center;
@@ -66,6 +71,13 @@ td {
     gap: var(--gap-content);
     padding: var(--gap-content) 0;
     width: 75%;
+}
+
+#navigation {
+    display: flex;
+    gap: var(--gap-catalog-entry);
+    justify-content: center;
+    padding-top: var(--gap-catalog-entry);
 }
 
 .media {
