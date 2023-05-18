@@ -3,6 +3,6 @@
 {% block title %}Home{% endblock title %}
 
 {% block content %}
-<h1>/agdg/ weekly recap</h1>
+<h1 class="title">/agdg/ weekly recap</h1>
 <p><a href="{{url_for("view", datestamp = datestamp)}}">{{datestamp | semantic_datestamp}}</a></p>
 {% endblock content %}

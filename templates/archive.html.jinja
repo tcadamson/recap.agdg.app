@@ -3,7 +3,7 @@
 {% block title %}Archive{% endblock title %}
 
 {% block content %}
-<h1>{{self.title()}}</h1>
+<h1 class="title">{{self.title()}}</h1>
 {% for year, datestamps in datestamps | groupby("year") | reverse %}
 <article>
     <h2>{{year | full_year}}</h2>

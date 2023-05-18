@@ -5,7 +5,7 @@
 {% block title %}{{game_data["title"]}}{% endblock title %}
 
 {% block content %}
-<h1>{{self.title()}}</h1>
+<h1 class="title">{{self.title()}}</h1>
 {% set datestamps = rows | map(attribute = "unix") | map("decode_unix") | unique | list %}
 <div class="catalog">
     {% call(datestamp) macros.pagination(datestamps, page) %}

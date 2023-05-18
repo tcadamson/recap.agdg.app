@@ -3,5 +3,5 @@
 {% block title %}Error: {{http_exception["code"]}}{% endblock title %}
 
 {% block content %}
-<h1>{{"%s: %s" % (http_exception["code"], http_exception["name"] | capitalize)}}</h1>
+<h1 class="title">{{"%s: %s" % (http_exception["code"], http_exception["name"] | capitalize)}}</h1>
 {% endblock content %}
