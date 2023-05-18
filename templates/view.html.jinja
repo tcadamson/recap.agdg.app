@@ -7,7 +7,7 @@
 {% block content %}
 <h1 class="title">{{self.title()}}</h1>
 <div class="catalog">
-    {% for title in rows | map(attribute = "title") %}
+    {% for title in rows | map(attribute = "title") | unique %}
     {{macros.catalog_entry_common(rows, title)}}
     {% endfor %}
 </div>
