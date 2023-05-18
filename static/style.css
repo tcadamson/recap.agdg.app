@@ -80,6 +80,11 @@ ul, ol {
     padding-top: var(--gap-catalog-entry);
 }
 
+#pagination {
+    display: flex;
+    gap: var(--gap-catalog-entry);
+}
+
 .media {
     object-fit: cover;
     object-position: center;
