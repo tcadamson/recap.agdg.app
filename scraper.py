@@ -4,11 +4,10 @@ import functools
 import html
 import json
 import logging
+import math
 import re
 import urllib.error
 import urllib.request
-
-import math
 
 import database
 
