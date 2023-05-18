@@ -2,8 +2,10 @@ import calendar
 import glob
 import pathlib
 import re
+import urllib.parse
 
 from flask import Flask, render_template, request, abort
+from urlextract import URLExtract
 from werkzeug.exceptions import HTTPException
 
 import database
@@ -110,6 +112,14 @@ def calendar_month(month_index):
 @app.template_filter()
 def decode_unix(unix):
     return CORRECTED_DATESTAMP_MAP.get(unix, scraper.decode_unix(unix))
+
+@app.template_filter()
+def urlize(text):
+    # Overwrites the default urlize filter, which doesn't correctly handle all TLDs
+    for url in URLExtract().find_urls(text):
+        scheme = urllib.parse.urlparse(url).scheme
+        text = re.sub(fr"({re.escape(url)})", fr'<a href="{"//" if not scheme else ""}\1">\1</a>', text)
+    return text
 
 @app.template_filter()
 def semantic_datestamp(datestamp):

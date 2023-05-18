@@ -44,7 +44,7 @@
             {% for field in ["dev", "tools", "web"] if row[field] %}
             <tr>
                 <td class="catalog-field"><p>{{field | capitalize}}:</p></td>
-                <td><p>{{row[field]}}</p></td>
+                <td><p>{{row[field] | urlize}}</p></td>
             </tr>
             {% endfor %}
         </table>
@@ -53,7 +53,7 @@
     {% endif %}
     {{media(row, "catalog") | indent}}
     {% if row["progress"] %}
-    <p>{{row["progress"]}}</p>
+    <p>{{row["progress"] | urlize}}</p>
     {% endif %}
     {% endfor %}
 </article>
