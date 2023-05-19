@@ -85,14 +85,22 @@ ul, ol {
     gap: var(--gap-catalog-entry);
 }
 
+.content-box {
+    width: var(--width-catalog-entry);
+}
+
 .media {
     object-fit: cover;
     object-position: center;
     width: 100%;
 }
 
-.title {
+.text-center {
     text-align: center;
+}
+
+.text-raw {
+    white-space: pre-line;
 }
 
 .catalog {
