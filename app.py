@@ -130,3 +130,7 @@ def semantic_datestamp(datestamp):
 @app.template_test()
 def matches_datestamp(unix, datestamp):
     return decode_unix(unix) == datestamp
+
+@app.template_test()
+def nonempty_field_data(field_data):
+    return "".join([dict(field_data).get(x, "") for x in ["dev", "tools", "web"]])

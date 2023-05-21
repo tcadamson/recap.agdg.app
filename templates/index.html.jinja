@@ -5,12 +5,12 @@
 {% block content %}
 <h1 class="text-center">/agdg/ Weekly Recap</h1>
 <div class="content-box">
-    <div class="catalog-header text-center">
-        <h2><a href="{{url_for("view", datestamp = datestamp)}}">Now: {{datestamp | semantic_datestamp}}</a></h2>
+    <div class="catalog-header">
+        <h2 class="text-center"><a href="{{url_for("view", datestamp = datestamp)}}">Now: {{datestamp | semantic_datestamp}}</a></h2>
     </div>
 </div>
 <div class="content-box">
-    <p class="text-center">Information:</p>
+    <p>Information:</p>
     <p class="text-raw">
         Each week begins on Monday at 12 AM, UTC.
 
