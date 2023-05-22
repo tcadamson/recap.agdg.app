@@ -4,25 +4,25 @@
 
 {% block content %}
 <h1 class="text-center">/agdg/ Weekly Recap</h1>
-<div class="content-box">
-    <div class="catalog-header">
+<div class="box-container">
+    <div class="box">
         <h2 class="text-center"><a href="{{url_for("view", datestamp = datestamp)}}">Now: {{datestamp | semantic_datestamp}}</a></h2>
     </div>
-</div>
-<div class="content-box">
-    <p>Information:</p>
-    <p class="text-raw">
-        Each week begins on Monday at 12 AM, UTC.
+    <div class="box box-variant">
+        <p class="text-center">Information:</p>
+        <p class="text-raw">
+            Each week begins on Monday at 12 AM, UTC.
 
-        :: (Title) ::
-        Dev ::
-        Tools ::
-        Web ::
-        (Progress)
+            :: (Title) ::
+            Dev ::
+            Tools ::
+            Web ::
+            (Progress)
 
-        Dev, Tools, and Web are optional fields. If no file is attached to the post, a default image will be used. To update your game's title, use the following syntax:
+            Dev, Tools, and Web are optional fields. If no file is attached to the post, a default image will be used. To update your game's title, use the following syntax:
 
-        :: (Title) -> (New Title) ::
-    </p>
+            :: (Title) -> (New Title) ::
+        </p>
+    </div>
 </div>
 {% endblock content %}

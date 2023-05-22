@@ -1,5 +1,6 @@
 :root {
-    --border-radius: 0.5625rem;
+    --border-radius: 0.9625rem;
+    --border-width: 0.5rem;
     --color-background: #1f1f1f;
     --color-font: #e3e3e3;
     --color-surface: #28292a;
@@ -11,10 +12,10 @@
     --font-family: Inter, sans-serif;
     --font-headline-line-height: 2rem;
     --font-headline-size: 1.5rem;
-    --gap-catalog-entry: 1.65rem;
-    --gap-content-catalog: 3.125rem;
+    --gap-content-box: 1.65rem;
+    --gap-content-catalog: 3.525rem;
     --gap-content: 6.25rem;
-    --width-catalog-entry: 26rem;
+    --width-catalog-media: 26.6rem;
     --width-catalog-field: 3.675rem;
 }
 
@@ -75,22 +76,36 @@ ul, ol {
 
 #navigation {
     display: flex;
-    gap: var(--gap-catalog-entry);
+    gap: var(--gap-content-box);
     justify-content: center;
-    padding-top: var(--gap-catalog-entry);
+    padding-top: var(--gap-content-box);
 }
 
 #pagination {
     display: flex;
-    gap: var(--gap-catalog-entry);
+    gap: var(--gap-content-box);
 }
 
-.content-box {
-    align-items: center;
+.box {
     align-self: center;
+    background: var(--color-surface);
+    border: var(--border-width) solid transparent;
+    border-radius: var(--border-radius);
     display: flex;
     flex-direction: column;
-    width: var(--width-catalog-entry);
+    padding: var(--gap-content-box);
+    width: var(--width-catalog-media);
+}
+
+.box-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-content-box);
+}
+
+.box-variant {
+    background: transparent;
+    border-color: var(--color-surface);
 }
 
 .media {
@@ -110,28 +125,16 @@ ul, ol {
 .catalog {
     display: grid;
     gap: var(--gap-content-catalog);
-    grid-template-columns: repeat(auto-fill, var(--width-catalog-entry));
+    grid-template-columns: repeat(auto-fill, var(--width-catalog-media));
     justify-content: center;
     width: 100%;
 }
 
 .catalog-media {
-    height: calc(var(--width-catalog-entry) / (16 / 9));
-}
-
-.catalog-content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-catalog-entry);
+    height: calc(var(--width-catalog-media) / (16 / 9));
 }
 
 .catalog-field {
     width: var(--width-catalog-field);
 }
 
-.catalog-header {
-    background: var(--color-surface);
-    border-radius: var(--border-radius);
-    padding: var(--gap-catalog-entry);
-    width: 100%;
-}

@@ -5,14 +5,12 @@
 {% block title %}{{game_data["title"]}}{% endblock title %}
 
 {% block content %}
-<div class="catalog-content">
-    <h1 class="text-center">{{self.title()}}</h1>
-    {% if game_data is nonempty_field_data %}
-    <div class="content-box">
-        {{macros.field_data(game_data) | indent(8)}}
-    </div>
-    {% endif %}
+<h1 class="text-center">{{self.title()}}</h1>
+{% if game_data is nonempty_field_data %}
+<div class="box box-variant">
+    {{macros.field_data(game_data) | indent}}
 </div>
+{% endif %}
 {% set datestamps = rows | map(attribute = "unix") | map("decode_unix") | unique | list %}
 <div class="catalog">
     {% call(datestamp) macros.pagination(datestamps, page) %}
