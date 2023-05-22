@@ -24,7 +24,7 @@
 {% set class = "media" %}
 {% set class = "%s %s-media" % (class, class_prefix) if class_prefix else class %}
 {% set url = url_for("static", filename = ("%s/%s" % (datestamp, row["unix"] ~ row["ext"])) if row["ext"] else "default.png") %}
-<a href="{{url}}">
+<a class="media-container" href="{{url}}">
     {% if row["ext"] == ".webm" %}
     <video class="{{class}}" src="{{url}}" autoplay muted loop></video>
     {% else %}

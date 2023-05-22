@@ -130,6 +130,10 @@ ul, ol {
     width: 100%;
 }
 
+.catalog .media-container:not(:nth-of-type(1)) {
+    margin-top: calc(var(--gap-content-catalog) - var(--gap-content-box));
+}
+
 .catalog-media {
     height: calc(var(--width-catalog-media) / (16 / 9));
 }
