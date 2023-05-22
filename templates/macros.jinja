@@ -1,4 +1,4 @@
-{% set per_page = 20 %}
+{% set per_page = 24 %}
 
 {% macro pagination(rows, page) %}
 {% for row in (rows | batch(per_page) | list)[page - 1] %}
