@@ -91,7 +91,7 @@ def game(game_id):
     game_data = connection.get_row("games", game_id)
     if not game_data:
         abort(404)
-    cursor = connection.execute(f"select * from posts where game_id = ? order by unix desc", (game_id,))
+    cursor = connection.execute(f"select * from posts where game_id = ? order by id desc", (game_id,))
     if cursor:
         rows = cursor.fetchall()
     connection.close()
