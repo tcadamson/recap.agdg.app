@@ -45,7 +45,8 @@
 {%- endmacro %}
 
 {% macro catalog_entry(rows, title, title_url) %}
-<article class="box-container">
+{% set rows = rows | list %}
+<article id="{{rows | map(attribute = "id") | first}}" class="box-container">
     {% for row in rows %}
     {% if loop.first %}
     <div class="box box-container">

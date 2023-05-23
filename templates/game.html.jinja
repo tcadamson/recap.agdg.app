@@ -19,7 +19,7 @@
         macros.catalog_entry(
             rows | selectattr("unix", "matches_datestamp", datestamp),
             datestamp | semantic_datestamp,
-            url_for("view", datestamp = datestamp)
+            url_for("view", _anchor = game_data["id"], datestamp = datestamp)
         ) | indent
     }}
     {% endcall %}
