@@ -145,3 +145,8 @@ ul, ol {
     width: var(--width-catalog-field);
 }
 
+.archive-month {
+    display: flex;
+    justify-content: space-between;
+}
+
