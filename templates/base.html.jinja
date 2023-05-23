@@ -24,10 +24,13 @@
         </header>
         <main id="container">
             <section id="content">
-                {% filter indent(16, True) %}
+                {% filter indent(16, self.content()) %}
                 {% block content %}{% endblock content %}
                 {% endfilter %}
             </section>
+            {% filter indent(12, self.pagination_drawer()) %}
+            {% block pagination_drawer %}{% endblock pagination_drawer %}
+            {% endfilter %}
         </main>
     </body>
 </html>

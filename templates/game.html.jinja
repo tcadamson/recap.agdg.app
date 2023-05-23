@@ -2,6 +2,8 @@
 
 {% import "macros.jinja" as macros %}
 
+{% set datestamps = rows | map(attribute = "unix") | map("decode_unix") | unique | list %}
+
 {% block title %}{{game_data["title"]}}{% endblock title %}
 
 {% block content %}
@@ -11,7 +13,6 @@
 {#    {{macros.field_data(game_data) | indent}}#}
 {#</div>#}
 {#{% endif %}#}
-{% set datestamps = rows | map(attribute = "unix") | map("decode_unix") | unique | list %}
 <div class="catalog">
     {% call(datestamp) macros.pagination(datestamps, page) %}
     {{
@@ -23,5 +24,6 @@
     }}
     {% endcall %}
 </div>
-{% block pagination_drawer scoped %}{{macros.pagination_drawer(datestamps, page)}}{% endblock pagination_drawer %}
 {% endblock content %}
+
+{% block pagination_drawer %}{{macros.pagination_drawer(datestamps, page)}}{% endblock pagination_drawer %}
