@@ -19,6 +19,9 @@ CORRECTED_DATESTAMP_MAP = {
 }
 
 app = Flask(__name__)
+url_extractor = URLExtract()
+# https://pypi.org/project/urlextract
+url_extractor.update()
 # https://jinja.palletsprojects.com/en/3.0.x/templates/#whitespace-control
 app.jinja_options["trim_blocks"] = True
 app.jinja_options["lstrip_blocks"] = True
@@ -116,7 +119,7 @@ def decode_unix(unix):
 @app.template_filter()
 def urlize(text):
     # Overwrites the default urlize filter, which doesn't correctly handle all TLDs
-    for url in URLExtract().find_urls(text):
+    for url in url_extractor.find_urls(text):
         scheme = urllib.parse.urlparse(url).scheme
         text = re.sub(fr"({re.escape(url)})", fr'<a href="{"//" if not scheme else ""}\1">\1</a>', text)
     return text
