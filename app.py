@@ -16,8 +16,9 @@ STATIC_PATH = "static"
 # Legacy recaps have entries that don't "belong", i.e. the unix timestamp doesn't match the datestamp. This is because entries
 # were manually collected at the end of the week. As a consequence, we map each unix timestamp to the correct datestamp
 LEGACY_UNIX_TO_DATESTAMP = {
-    int(k.stem): int(k.parent.stem) for k in pathlib.Path(STATIC_PATH).rglob("*/*") if str(scraper.decode_unix(k.stem)) != k.parent.stem
+    int(k.stem): int(k.parent.stem) for k in sorted(pathlib.Path(STATIC_PATH).rglob("*/*")) if str(scraper.decode_unix(k.stem)) != k.parent.stem
 }
+LEGACY_UNIX = [*LEGACY_UNIX_TO_DATESTAMP]
 
 app = Flask(__name__)
 url_extractor = URLExtract()
@@ -128,16 +129,15 @@ def calendar_month(month_index):
 
 @app.template_filter()
 def decode_unix(unix):
-    legacy_unix = [*LEGACY_UNIX_TO_DATESTAMP]
     padded_unix = unix * 1000
     # Null entry (no attached media, no microtime) belonging to a legacy recap
-    if padded_unix < legacy_unix[-1]:
-        i = bisect.bisect_right(legacy_unix, padded_unix)
+    if padded_unix < LEGACY_UNIX[-1]:
+        i = bisect.bisect_right(LEGACY_UNIX, padded_unix)
         # Null entries on an edge borrow the unix timestamp from the nearest non-null entry, truncate microtime, then + or - 1
         # depending on edge, e.g.
         # 1519635518161 -> 1519635517
         # 1527082325055 -> 1527082326
-        unix = legacy_unix[i] if (legacy_unix[i] - padded_unix) < 2000 else legacy_unix[i - 1]
+        unix = LEGACY_UNIX[i] if (LEGACY_UNIX[i] - padded_unix) < 2000 else LEGACY_UNIX[i - 1]
     return LEGACY_UNIX_TO_DATESTAMP.get(unix, scraper.decode_unix(unix))
 
 @app.template_filter()
