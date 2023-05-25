@@ -12,6 +12,7 @@
     --font-family: Inter, sans-serif;
     --font-headline-line-height: 2rem;
     --font-headline-size: 1.5rem;
+    --font-underline-offset: 0.1875rem;
     --gap-content-box: 1.65rem;
     --gap-content-catalog: 3.525rem;
     --gap-content: 6.25rem;
@@ -40,8 +41,9 @@ a {
     text-decoration: none;
 }
 
-a:hover {
+a:hover, .pagination-active {
     text-decoration: underline;
+    text-underline-offset: var(--font-underline-offset);
 }
 
 table {
