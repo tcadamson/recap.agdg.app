@@ -2,6 +2,8 @@ import logging
 import re
 import sqlite3
 
+import app
+
 COLUMN_DEFAULTS = {
     "INTEGER": 0,
     "TEXT": ""
@@ -36,6 +38,7 @@ class Connection:
         else:
             self.source = source
         self.source.row_factory = sqlite3.Row
+        self.source.create_function("decode_unix", 1, app.decode_unix)
         # Enable foreign key constraints
         self.source.execute("pragma foreign_keys = on")
 

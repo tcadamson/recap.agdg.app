@@ -1,3 +1,4 @@
+import bisect
 import calendar
 import glob
 import pathlib
@@ -12,9 +13,9 @@ import database
 import scraper
 
 STATIC_PATH = "static"
-# Some legacy recaps have entries that don't "belong", i.e. the unix timestamp doesn't match the datestamp. This is because the
-# previous, manual scraping process wasn't always on time. As a consequence, we may have to search for the correct datestamp
-CORRECTED_DATESTAMP_MAP = {
+# Legacy recaps have entries that don't "belong", i.e. the unix timestamp doesn't match the datestamp. This is because entries
+# were manually collected at the end of the week. As a consequence, we map each unix timestamp to the correct datestamp
+LEGACY_UNIX_TO_DATESTAMP = {
     int(k.stem): int(k.parent.stem) for k in pathlib.Path(STATIC_PATH).rglob("*/*") if str(scraper.decode_unix(k.stem)) != k.parent.stem
 }
 
@@ -45,20 +46,19 @@ def archive():
 @app.route("/view/<int:datestamp>")
 def view(datestamp):
     rows = []
-    filenames = [re.sub(r".+/(\d+).+", r"\1", x) for x in glob.glob(f"{STATIC_PATH}/{datestamp}/*")]
-    if not filenames:
-        abort(404)
     connection = database.Connection(memory = True)
-    cursor = connection.execute(f"""
+    cursor = connection.execute("""
         select *
         from games
         join posts on
             games.id = posts.game_id
-        where unix in
-            ({','.join(['?'] * len(filenames))})
-    """, filenames)
+        where decode_unix(unix) == ?
+        order by substr(unix, 1)
+    """, (datestamp,))
     if cursor:
         rows = cursor.fetchall()
+    if not rows:
+        abort(404)
     connection.close()
     return render_template("view.html.jinja", datestamp = datestamp, rows = rows)
 
@@ -94,7 +94,7 @@ def game(game_id):
     game_data = connection.get_row("games", game_id)
     if not game_data:
         abort(404)
-    cursor = connection.execute(f"select * from posts where game_id = ? order by id desc", (game_id,))
+    cursor = connection.execute("select * from posts where game_id = ? order by id desc", (game_id,))
     if cursor:
         rows = cursor.fetchall()
     connection.close()
@@ -114,7 +114,17 @@ def calendar_month(month_index):
 
 @app.template_filter()
 def decode_unix(unix):
-    return CORRECTED_DATESTAMP_MAP.get(unix, scraper.decode_unix(unix))
+    legacy_unix = [*LEGACY_UNIX_TO_DATESTAMP]
+    padded_unix = unix * 1000
+    # Null entry (no attached media, no microtime) belonging to a legacy recap
+    if padded_unix < legacy_unix[-1]:
+        i = bisect.bisect_right(legacy_unix, padded_unix)
+        # Null entries on an edge borrow the unix timestamp from the nearest non-null entry, truncate microtime, then + or - 1
+        # depending on edge, e.g.
+        # 1519635518161 -> 1519635517
+        # 1527082325055 -> 1527082326
+        unix = legacy_unix[i] if (legacy_unix[i] - padded_unix) < 2000 else legacy_unix[i - 1]
+    return LEGACY_UNIX_TO_DATESTAMP.get(unix, scraper.decode_unix(unix))
 
 @app.template_filter()
 def urlize(text):
