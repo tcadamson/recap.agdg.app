@@ -7,7 +7,7 @@
 {% for year, datestamps in datestamps | groupby("year") | reverse %}
 <article>
     <div class="box box-variant">
-        <h2 class="text-center">{{year | full_year}}:</h2><br>
+        <h2 class="text-center">{{year | full_year}} ({{game_counts[loop.index0]}} games):</h2><br>
         {% for month, datestamps in datestamps | groupby("month") %}
         <section class="archive-month">
             <p>{{month | calendar_month}}</p>

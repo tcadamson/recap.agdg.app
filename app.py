@@ -41,7 +41,21 @@ def index():
 
 @app.route("/archive")
 def archive():
-    return render_template("archive.html.jinja", datestamps = [split_datestamp(x) for x in glob.glob(f"{STATIC_PATH}/*/") if x])
+    rows = []
+    connection = database.Connection(memory = True)
+    cursor = connection.execute("""
+        select count(distinct game_id)
+        from posts
+        group by substr(decode_unix(unix), 1, 2)
+        order by id desc
+    """)
+    if cursor:
+        rows = cursor.fetchall()
+    connection.close()
+    return render_template("archive.html.jinja",
+        datestamps = [split_datestamp(x) for x in glob.glob(f"{STATIC_PATH}/*/") if x],
+        game_counts = [x[0] for x in rows]
+    )
 
 @app.route("/view/<int:datestamp>")
 def view(datestamp):
