@@ -54,7 +54,7 @@ def archive():
         rows = cursor.fetchall()
     connection.close()
     return render_template("archive.html.jinja",
-        datestamps = [split_datestamp(x) for x in glob.glob(f"{STATIC_PATH}/*/") if x],
+        datestamps = [split_datestamp(x) for x in sorted(glob.glob(f"{STATIC_PATH}/*/")) if x],
         game_counts = [x[0] for x in rows]
     )
 
