@@ -102,16 +102,17 @@ ul, ol {
     width: var(--width-catalog-media);
 }
 
+.box-variant {
+    background: transparent;
+    border-color: var(--color-surface);
+}
+
 .box-container {
     display: flex;
     flex-direction: column;
     gap: var(--gap-content-box);
 }
 
-.box-variant {
-    background: transparent;
-    border-color: var(--color-surface);
-}
 
 .media {
     object-fit: cover;
@@ -133,6 +134,10 @@ ul, ol {
     grid-template-columns: repeat(auto-fill, var(--width-catalog-media));
     justify-content: center;
     width: 100%;
+}
+
+.catalog-variant {
+    width: var(--width-catalog-media);
 }
 
 .catalog .media-container:not(:nth-of-type(1)) {
