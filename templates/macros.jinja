@@ -6,11 +6,11 @@
 {%- endfor %}
 {% endmacro %}
 
-{% macro pagination_drawer_link(text, page) %}
-<h2><a href="{{url_for(request.endpoint, page = page, **request.view_args)}}">{{text}}</a></h2>
+{% macro pagination_drawer_link(text, page, search) %}
+<h2><a href="{{url_for(request.endpoint, page = page, search = search, **request.view_args)}}">{{text}}</a></h2>
 {%- endmacro %}
 
-{% macro pagination_drawer(rows, page, delta = 4) %}
+{% macro pagination_drawer(rows, page, search = None, delta = 4) %}
 {% set pages = rows | batch(per_page) | list | length %}
 {% if pages > 1 %}
 <ol id="pagination">
@@ -18,10 +18,10 @@
     <li>
         {% if i == page %}
         <span class="pagination-active">
-            {{pagination_drawer_link(i, i)}}
+            {{pagination_drawer_link(i, i, search)}}
         </span>
         {% else %}
-        {{pagination_drawer_link(i, i)}}
+        {{pagination_drawer_link(i, i, search)}}
         {% endif %}
     </li>
     {% endfor %}

@@ -77,11 +77,16 @@ def view(datestamp):
     connection.close()
     return render_template("view.html.jinja", datestamp = datestamp, rows = rows)
 
-@app.route("/games")
+@app.route("/games", methods = ["GET", "POST"])
 def games():
     rows = []
+    # Due to how url_for works, defaulting search to "" clutters up the URL, e.g. .../games?page=2&search=
+    search = request.form.get("search", request.args.get("search"))
+    search_fields = ["title", "dev", "tools", "web"]
+    # https://sqlite.org/lang_expr.html#like
+    search_escape = "!"
     connection = database.Connection(memory = True)
-    cursor = connection.execute("""
+    cursor = connection.execute(f"""
         select *
         from (
             select games.id, title, dev, tools, web, unix, ext
@@ -94,13 +99,14 @@ def games():
             )
             order by random()
         )
+        where {" or ".join([f"{x} like ? escape '{search_escape}'" for x in search_fields])}
         group by id
         order by id desc
-    """)
+    """, ("%{}%".format(re.sub(fr"([%_{search_escape}])", fr"{search_escape}\1", search or "")),) * len(search_fields))
     if cursor:
         rows = cursor.fetchall()
     connection.close()
-    return render_template("games.html.jinja", rows = rows, page = get_page())
+    return render_template("games.html.jinja", rows = rows, search = search, page = get_page())
 
 @app.route("/games/<int:game_id>")
 def game(game_id):

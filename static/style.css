@@ -13,9 +13,10 @@
     --font-headline-line-height: 2rem;
     --font-headline-size: 1.5rem;
     --font-underline-offset: 0.1875rem;
+    --gap-content: 6.25rem;
     --gap-content-box: 1.65rem;
     --gap-content-catalog: 3.525rem;
-    --gap-content: 6.25rem;
+    --gap-search-bar: 0.938rem;
     --width-catalog-media: 26.6rem;
     --width-catalog-field: 3.675rem;
 }
@@ -155,5 +156,22 @@ ul, ol {
 .archive-month {
     display: flex;
     justify-content: space-between;
+}
+
+.search-bar {
+    background: var(--color-background);
+    border: var(--border-width) solid var(--color-surface);
+    border-radius: var(--border-radius);
+    color: var(--color-font);
+    padding: calc((11 / 15) * var(--gap-search-bar)) var(--gap-search-bar);
+    width: var(--width-catalog-media);
+}
+
+.search-bar:focus {
+    outline: none;
+}
+
+.search-bar::placeholder {
+    color: var(--color-font);
 }
 
