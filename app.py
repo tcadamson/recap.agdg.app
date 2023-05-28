@@ -87,7 +87,7 @@ def games():
     search_escape = "!"
     connection = database.Connection(memory = True)
     cursor = connection.execute(f"""
-        select *
+        select t1.*, t2.max_unix
         from (
             select games.id, title, dev, tools, web, unix, ext
             from games
@@ -98,10 +98,16 @@ def games():
                 select game_id from posts where ext != ''
             )
             order by random()
-        )
+        ) t1
+        left join (
+            select game_id, max(substr(unix, 1)) as max_unix
+            from posts
+            group by game_id
+        ) t2 on
+            t1.id = t2.game_id
         where {" or ".join([f"{x} like ? escape '{search_escape}'" for x in search_fields])}
-        group by id
-        order by id desc
+        group by t1.id
+        order by t2.max_unix desc
     """, ("%{}%".format(re.sub(fr"([%_{search_escape}])", fr"{search_escape}\1", search or "")),) * len(search_fields))
     if cursor:
         rows = cursor.fetchall()
