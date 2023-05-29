@@ -115,6 +115,12 @@ ul, ol {
     gap: var(--gap-content-box);
 }
 
+.row {
+    display: flex;
+    gap: var(--gap-row);
+    justify-content: space-between;
+}
+
 .media {
     object-fit: cover;
     object-position: center;
@@ -143,12 +149,12 @@ ul, ol {
     width: 100%;
 }
 
-.catalog-variant {
-    width: var(--width-catalog-media);
-}
-
 .catalog .media-container:not(:nth-of-type(1)) {
     margin-top: calc(var(--gap-content-catalog) - var(--gap-content-box));
+}
+
+.catalog-variant {
+    width: var(--width-catalog-media);
 }
 
 .catalog-media {
@@ -179,10 +185,4 @@ ul, ol {
 
 .search-bar::placeholder {
     color: var(--color-font);
-}
-
-.row {
-    display: flex;
-    gap: var(--gap-row);
-    justify-content: space-between;
 }
