@@ -58,6 +58,23 @@ def archive():
         game_counts = [x[0] for x in rows]
     )
 
+@app.route("/leaderboard")
+def leaderboard():
+    rows = []
+    connection = database.Connection(memory = True)
+    cursor = connection.execute("""
+        select *, count(distinct decode_unix(unix)) as count_unix, max(substr(unix, 1)) as max_unix
+        from games
+        join posts on
+            games.id = posts.game_id
+        group by games.id
+        order by count_unix desc, max_unix desc
+    """)
+    if cursor:
+        rows = cursor.fetchall()
+    connection.close()
+    return render_template("leaderboard.html.jinja", rows = rows)
+
 @app.route("/view/<int:datestamp>")
 def view(datestamp):
     rows = []

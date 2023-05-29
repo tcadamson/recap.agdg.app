@@ -1,0 +1,25 @@
+{% extends "base.html.jinja" %}
+
+{% block title %}Leaderboard{% endblock title %}
+
+{% block content %}
+<h1 class="text-center">{{self.title()}}</h1>
+<div class="catalog catalog-variant">
+    {% for i in range(2) %}
+    <article>
+        <div class="box box-variant">
+            {% set ranks = 25 %}
+            {% if loop.first %}
+            <h2 class="text-center">Total recaps (top {{ranks}}):</h2><br>
+            {% endif %}
+            {% for row in (rows[:ranks] if loop.first else rows[ranks:]) %}
+            <section class="row">
+                <p class="text-no-overflow"><a href="{{url_for("game", game_id = row["id"])}}">{{row["title"]}}</a></p>
+                <p>{{row["count_unix"]}}</p>
+            </section>
+            {% endfor %}
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% endblock content %}

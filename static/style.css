@@ -16,6 +16,7 @@
     --gap-content: 6.25rem;
     --gap-content-box: 1.65rem;
     --gap-content-catalog: 3.525rem;
+    --gap-row: 1rem;
     --gap-search-bar: 0.938rem;
     --width-catalog-media: 26.6rem;
     --width-catalog-field: 3.675rem;
@@ -114,7 +115,6 @@ ul, ol {
     gap: var(--gap-content-box);
 }
 
-
 .media {
     object-fit: cover;
     object-position: center;
@@ -127,6 +127,12 @@ ul, ol {
 
 .text-raw {
     white-space: pre-line;
+}
+
+.text-no-overflow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .catalog {
@@ -175,3 +181,8 @@ ul, ol {
     color: var(--color-font);
 }
 
+.row {
+    display: flex;
+    gap: var(--gap-row);
+    justify-content: space-between;
+}
