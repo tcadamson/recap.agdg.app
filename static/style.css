@@ -165,11 +165,6 @@ ul, ol {
     width: var(--width-catalog-field);
 }
 
-.archive-month {
-    display: flex;
-    justify-content: space-between;
-}
-
 .search-bar {
     background: var(--color-background);
     border: var(--border-width) solid var(--color-surface);
