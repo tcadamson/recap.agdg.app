@@ -8,14 +8,14 @@
     {% for i in range(2) %}
     <article>
         <div class="box box-variant">
-            {% set ranks = 25 %}
+            {% set top_count = 25 %}
             {% if loop.first %}
-            <h2 class="text-center">Total recaps (top {{ranks}}):</h2><br>
+            <h2 class="text-center">Total recaps (top {{top_count}}):</h2><br>
             {% endif %}
-            {% for row in (rows[:ranks] if loop.first else rows[ranks:]) %}
+            {% for row in (rows[:top_count] if loop.first else rows[top_count:]) %}
             <section class="row">
                 <p class="text-no-overflow"><a href="{{url_for("game", game_id = row["id"])}}">{{row["title"]}}</a></p>
-                <p>{{row["count_unix"]}}</p>
+                <p>{{row["unix_count"]}}</p>
             </section>
             {% endfor %}
         </div>

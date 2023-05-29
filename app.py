@@ -63,12 +63,12 @@ def leaderboard():
     rows = []
     connection = database.Connection(memory = True)
     cursor = connection.execute("""
-        select *, count(distinct decode_unix(unix)) as count_unix, max(substr(unix, 1)) as max_unix
+        select *, count(distinct decode_unix(unix)) as unix_count, max(substr(unix, 1)) as unix_max
         from games
         join posts on
             games.id = posts.game_id
         group by games.id
-        order by count_unix desc, max_unix desc
+        order by unix_count desc, unix_max desc
     """)
     if cursor:
         rows = cursor.fetchall()
@@ -104,7 +104,7 @@ def games():
     search_escape = "!"
     connection = database.Connection(memory = True)
     cursor = connection.execute(f"""
-        select t1.*, t2.max_unix
+        select t1.*, t2.unix_max
         from (
             select games.id, title, dev, tools, web, unix, ext
             from games
@@ -117,14 +117,14 @@ def games():
             order by random()
         ) t1
         left join (
-            select game_id, max(substr(unix, 1)) as max_unix
+            select game_id, max(substr(unix, 1)) as unix_max
             from posts
             group by game_id
         ) t2 on
             t1.id = t2.game_id
         where {" or ".join([f"{x} like ? escape '{search_escape}'" for x in search_fields])}
         group by t1.id
-        order by t2.max_unix desc
+        order by t2.unix_max desc
     """, ("%{}%".format(re.sub(fr"([%_{search_escape}])", fr"{search_escape}\1", search or "")),) * len(search_fields))
     if cursor:
         rows = cursor.fetchall()
