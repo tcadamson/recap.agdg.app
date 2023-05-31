@@ -75,7 +75,7 @@ def get_agdg_threads():
         json.dump(archived, cache, separators = (",", ":"))
     return threads
 
-def decode_unix(unix = datetime.datetime.now(datetime.timezone.utc).timestamp()):
+def decode_unix(unix):
     """
     Converts a unix timestamp to YYMMW format, e.g. 1587240724142 -> 20043
     Recap week begins every Monday at 12 AM (UTC), spanning Monday to Sunday inclusive; the date logic follows from this.

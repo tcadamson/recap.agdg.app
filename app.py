@@ -1,5 +1,6 @@
 import bisect
 import calendar
+import datetime
 import glob
 import pathlib
 import re
@@ -38,7 +39,7 @@ def get_page():
 
 @app.route("/")
 def index():
-    return render_template("index.html.jinja", datestamp = scraper.decode_unix())
+    return render_template("index.html.jinja", datestamp = scraper.decode_unix(datetime.datetime.now(datetime.timezone.utc).timestamp()))
 
 @app.route("/archive")
 def archive():
