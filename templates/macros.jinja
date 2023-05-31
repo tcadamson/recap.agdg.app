@@ -30,11 +30,10 @@
 {% endmacro %}
 
 {% macro media(row, class_prefix) %}
-{% set datestamp = row["unix"] | decode_unix %}
-{% set class = "media" %}
-{% set class = "%s %s-media" % (class, class_prefix) if class_prefix else class %}
-{% set url = url_for("static", filename = ("%s/%s" % (datestamp, row["unix"] ~ row["ext"])) if row["ext"] else "default.png") %}
+{% set url = url_for("static", filename = ("%s/%s" % (row["unix"] | decode_unix, row["unix"] ~ row["ext"])) if row["ext"] else "default.png") %}
 <a class="media-container" href="{{url}}">
+    {% set class = "media" %}
+    {% set class = "%s %s-media" % (class, class_prefix) if class_prefix else class %}
     {% if row["ext"] == ".webm" %}
     <video class="{{class}}" src="{{url}}" autoplay muted loop></video>
     {% else %}
