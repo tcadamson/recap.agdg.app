@@ -90,6 +90,7 @@ ul, ol {
 #pagination {
     display: flex;
     gap: var(--gap-content-box);
+    justify-content: center;
     padding-bottom: var(--gap-content-box);
 }
 

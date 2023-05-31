@@ -4,11 +4,11 @@
 
 {% block content %}
 <h1 class="text-center">/agdg/ Weekly Recap</h1>
-<div class="box-container">
+<section class="box-container">
     <div class="box">
         <h2 class="text-center"><a href="{{url_for("view", datestamp = datestamp)}}">Now: {{datestamp | semantic_datestamp}}</a></h2>
     </div>
-    <div class="box box-variant">
+    <section class="box box-variant">
         <h2 class="text-center">Information:</h2>
         <p class="text-raw">
             Each week begins on Monday at 12 AM, UTC. Post format:
@@ -23,6 +23,6 @@
 
             :: (Title) -> (New Title) ::
         </p>
-    </div>
-</div>
+    </section>
+</section>
 {% endblock content %}

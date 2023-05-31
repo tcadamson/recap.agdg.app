@@ -59,12 +59,12 @@
 <article id="{{rows | map(attribute = "id") | first}}" class="box-container">
     {% for row in rows %}
     {% if loop.first %}
-    <div class="box box-container">
+    <section class="box box-container">
         <h2 class="text-center"><a href="{{title_url}}">{{title}}</a></h2>
         {% if row is nonempty_field_data %}
         {{field_data(row) | indent(8)}}
         {% endif %}
-    </div>
+    </section>
     {% endif %}
     {{media(row, "catalog") | indent}}
     {% if row["progress"] %}

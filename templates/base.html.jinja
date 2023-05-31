@@ -28,9 +28,11 @@
                 {% block content %}{% endblock content %}
                 {% endfilter %}
             </section>
+        </main>
+        <footer>
             {% filter indent(12, self.pagination_drawer()) %}
             {% block pagination_drawer %}{% endblock pagination_drawer %}
             {% endfilter %}
-        </main>
+        </footer>
     </body>
 </html>

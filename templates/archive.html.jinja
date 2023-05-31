@@ -6,22 +6,20 @@
 <h1 class="text-center">{{self.title()}}</h1>
 <div class="catalog catalog-variant">
     {% for year, datestamps in datestamps | groupby("year") | reverse %}
-    <article>
-        <div class="box box-variant">
-            <h2 class="text-center">{{year | full_year}} ({{game_counts[loop.index0]}} games):</h2><br>
-            {% for month, datestamps in datestamps | groupby("month") %}
-            <section class="row">
-                <p>{{month | calendar_month}}</p>
-                <p>
-                    {% for datestamp in datestamps %}
-                    <a href="{{url_for("view", datestamp = datestamp.values() | join)}}">{{datestamp["week"]}}</a>
-                    {{-" /" if not loop.last}}
-                    {% endfor %}
-                </p>
-            </section>
-            {% endfor %}
+    <section class="box box-variant">
+        <h2 class="text-center">{{year | full_year}} ({{game_counts[loop.index0]}} games):</h2><br>
+        {% for month, datestamps in datestamps | groupby("month") %}
+        <div class="row">
+            <p>{{month | calendar_month}}</p>
+            <p>
+                {% for datestamp in datestamps %}
+                <a href="{{url_for("view", datestamp = datestamp.values() | join)}}">{{datestamp["week"]}}</a>
+                {{-" /" if not loop.last}}
+                {% endfor %}
+            </p>
         </div>
-    </article>
+        {% endfor %}
+    </section>
     {% endfor %}
 </div>
 {% endblock content %}
