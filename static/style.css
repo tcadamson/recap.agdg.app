@@ -124,7 +124,7 @@ ul, ol {
     gap: var(--gap-content-box);
 }
 
-.row {
+.row-container {
     display: flex;
     gap: var(--gap-row);
     justify-content: space-between;

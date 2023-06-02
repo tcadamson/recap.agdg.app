@@ -10,7 +10,7 @@
         <h2 class="text-center">{{year | full_year}} ({{game_counts[loop.index0]}} games):</h2>
         <div>
             {% for month, datestamps in datestamps | groupby("month") %}
-            <div class="row">
+            <div class="row-container">
                 <p>{{month | calendar_month}}</p>
                 <p>
                     {% for datestamp in datestamps %}

@@ -13,7 +13,7 @@
         {% endif %}
         <div>
             {% for row in (rows[:top_count] if loop.first else rows[top_count:]) %}
-            <div class="row">
+            <div class="row-container">
                 <p class="text-no-overflow"><a href="{{url_for("game", game_id = row["id"])}}">{{row["title"]}}</a></p>
                 <p>{{row["unix_count"]}}</p>
             </div>
