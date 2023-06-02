@@ -14,7 +14,7 @@
     <body>
         <header>
             <nav>
-                <ul id="navigation">
+                <ul id="navigation" class="list-container">
                     {% for endpoint in ["index", "archive", "leaderboard", "games"] %}
                     <li>
                         <h2><a href="{{url_for(endpoint)}}">{{endpoint | replace("index", "home") | capitalize}}</a></h2>

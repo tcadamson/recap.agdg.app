@@ -89,17 +89,17 @@ ul, ol {
 }
 
 #navigation {
-    display: flex;
-    gap: var(--gap-content-box);
-    justify-content: center;
     padding-top: var(--gap-content-box);
 }
 
 #pagination {
+    padding-bottom: var(--gap-content-box);
+}
+
+.list-container {
     display: flex;
     gap: var(--gap-content-box);
     justify-content: center;
-    padding-bottom: var(--gap-content-box);
 }
 
 .box {
