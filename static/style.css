@@ -83,9 +83,9 @@ ul, ol {
     display: flex;
     flex-direction: column;
     gap: var(--gap-content);
+    max-width: calc(3 * (var(--width-catalog-media) + var(--gap-content-catalog)) - var(--gap-content-catalog));
     padding: var(--gap-content) 0;
     width: 75%;
-    max-width: 1872px;
 }
 
 #navigation {
