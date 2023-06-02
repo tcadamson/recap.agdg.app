@@ -9,7 +9,7 @@
     <section class="box box-variant box-container">
         {% set top_count = 25 %}
         {% if loop.first %}
-        <h2 class="text-center">Total recaps (top {{top_count}}):</h2>
+        <h2 class="text-center">Recaps (top {{top_count}}):</h2>
         {% endif %}
         <div>
             {% for row in (rows[:top_count] if loop.first else rows[top_count:]) %}
