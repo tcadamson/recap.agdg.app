@@ -159,6 +159,7 @@ ul, ol {
 }
 
 .catalog .media-container:not(:nth-of-type(1)) {
+    /* Add extra whitespace between multiple progress entries (can't use gap because .media-container can't be isolated) */
     margin-top: calc(var(--gap-content-catalog) - var(--gap-content-box));
 }
 
@@ -179,6 +180,7 @@ ul, ol {
     border: var(--border-width) solid var(--color-surface);
     border-radius: var(--border-radius);
     color: var(--color-font);
+    /* Default padding appears vertically biased, so we slightly constrain it */
     padding: calc((11 / 15) * var(--gap-search-bar)) var(--gap-search-bar);
     width: var(--width-catalog-media);
 }
