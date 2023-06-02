@@ -22,6 +22,14 @@
     --width-catalog-field: 3.675rem;
 }
 
+html {
+    /*
+    Scales site content such that for smaller viewports, whitespace on the screen edges will match var(--gap-content). Can't use
+    calc(100vw / (var(--gap-content) * 2 + var(--width-catalog-media))) due to units in divisor
+    */
+    font-size: clamp(1%, 2.558vw, 100%);
+}
+
 body {
     background: var(--color-background);
     color: var(--color-font);
