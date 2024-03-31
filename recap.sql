@@ -1,20 +1,17 @@
--- Schema for recap database
-
-create table games (
+create table game (
     id integer primary key autoincrement,
-    title text collate NOCASE not null unique,
-    dev text not null,
-    tools text not null,
-    web text not null
+    title text not null unique collate nocase,
+    dev text,
+    tools text,
+    web text
 );
 
--- If no media is attached, the unix timestamp will be lower resolution (no image upload microtime), and the extension will be empty
-create table posts (
+create table post (
     id integer primary key autoincrement,
-    game_id integer not null references games (id)
+    game_id integer not null references game (id)
         on update cascade
         on delete cascade,
-    unix integer not null unique,
-    ext text not null,
+    unix integer not null,
+    filename text,
     progress text not null
 );
