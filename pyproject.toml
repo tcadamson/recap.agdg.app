@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=64.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "weeklyrecap"
+version = "0.0.0"
+requires-python = ">=3.11"
+dependencies = [
+    "flask",
+    "sqlalchemy",
+    "python-dotenv",
+]
+
+[project.optional-dependencies]
+dev = [
+    "mypy",
+    "ruff",
+]
+
+[tool.mypy]
+strict = true
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    # https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+    "W191",
+    "E111",
+    "E114",
+    "E117",
+    "E501",
+    "D206",
+    "D300",
+    "Q000",
+    "Q001",
+    "Q002",
+    "Q003",
+    "COM812",
+    "COM819",
+    "ISC001",
+    "ISC002",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
