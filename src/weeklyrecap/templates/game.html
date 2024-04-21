@@ -1,6 +1,6 @@
-{% extends "base.html.jinja" %}
+{% extends "base.html" %}
 
-{% import "macros.jinja" as macros %}
+{% import "macros.html" as macros %}
 
 {% set datestamps = rows | map(attribute = "unix") | map("decode_unix") | unique | list %}
 
