@@ -19,6 +19,6 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SQLALCHEMY_DATABASE_URI"
 
 pathlib.Path(app.instance_path).mkdir(exist_ok=True)
 
-from . import database, routes  # noqa: E402, F401
+from . import database, routes, scraper  # noqa: E402, F401
 
 database.init()
