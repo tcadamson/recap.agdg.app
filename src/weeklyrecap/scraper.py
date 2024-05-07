@@ -8,9 +8,6 @@ from . import app
 
 _REQUEST_TIMEOUT_SECONDS: typing.Final = 10
 
-# https://github.com/4chan/4chan-API
-_JsonResponse: typing.TypeAlias = dict[str, typing.Any] | list[typing.Any]
-
 
 class _Endpoint(enum.StrEnum):
     CATALOG = "https://a.4cdn.org/vg/catalog.json"
@@ -19,19 +16,15 @@ class _Endpoint(enum.StrEnum):
     MEDIA = "https://i.4cdn.org/vg/%d%s"
 
 
-@functools.lru_cache
-def _request_json(url: _Endpoint) -> _JsonResponse | None:
+@functools.cache
+def _request_json(endpoint: _Endpoint) -> object:
     try:
         return typing.cast(
-            _JsonResponse,
-            requests.get(url, timeout=_REQUEST_TIMEOUT_SECONDS).json(),
+            object, requests.get(endpoint, timeout=_REQUEST_TIMEOUT_SECONDS).json()
         )
-    except requests.exceptions.JSONDecodeError:
-        app.logger.error("No valid JSON response from URL: %s", url)
-    except requests.exceptions.ReadTimeout:
-        app.logger.error(
-            "Request timed out (>%d seconds) for URL: %s", _REQUEST_TIMEOUT_SECONDS, url
-        )
+    except requests.RequestException as e:
+        app.logger.error("Request failed for %s: %r", endpoint, e)
+
     return None
 
 
