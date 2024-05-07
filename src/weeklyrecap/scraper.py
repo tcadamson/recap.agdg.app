@@ -3,11 +3,14 @@ import functools
 import re
 import typing
 
+import redis
 import requests
 
 from . import app
 
 _REQUEST_TIMEOUT_SECONDS: typing.Final = 10
+
+_redis = redis.Redis()
 
 
 class _Endpoint(enum.StrEnum):
@@ -15,6 +18,10 @@ class _Endpoint(enum.StrEnum):
     ARCHIVE = "https://a.4cdn.org/vg/archive.json"
     THREAD = "https://a.4cdn.org/vg/thread/%d.json"
     MEDIA = "https://i.4cdn.org/vg/%d%s"
+
+
+class _RedisKey(enum.StrEnum):
+    ARCHIVE = enum.auto()
 
 
 class _Post(typing.TypedDict):
@@ -96,8 +103,25 @@ def _request_thread_ids(subject: str) -> list[int]:
         ]
 
     if _is_archive(archive):
+        archive_cache = []
+
+        try:
+            archive_cache += list(
+                map(int, typing.cast(set[bytes], _redis.smembers(_RedisKey.ARCHIVE)))
+            )
+
+            _redis.delete(_RedisKey.ARCHIVE)
+            _redis.sadd(_RedisKey.ARCHIVE, *archive)
+        except redis.RedisError as e:
+            app.logger.error("Redis operations failed: %r", e)
+
         for thread in map(
-            _request_json, (_Endpoint.THREAD % thread_id for thread_id in archive)
+            _request_json,
+            (
+                _Endpoint.THREAD % thread_id
+                for thread_id in archive
+                if thread_id not in archive_cache
+            ),
         ):
             if _is_thread(thread) and _post_has_subject(
                 post := thread["posts"][0], subject

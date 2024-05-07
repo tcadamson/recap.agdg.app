@@ -10,6 +10,7 @@ dependencies = [
     "flask",
     "sqlalchemy",
     "python-dotenv",
+    "redis",
 ]
 
 [project.optional-dependencies]
