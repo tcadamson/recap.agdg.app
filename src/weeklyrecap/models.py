@@ -7,8 +7,6 @@ from . import database
 class Game(database.Base):
     """Represents a game in the database."""
 
-    __tablename__ = "game"
-
     game_id: sql_orm.Mapped[int] = sql_orm.mapped_column(
         primary_key=True, autoincrement=True
     )
@@ -26,8 +24,6 @@ class Game(database.Base):
 
 class Post(database.Base):
     """Represents a post associated with a game in the database."""
-
-    __tablename__ = "post"
 
     post_id: sql_orm.Mapped[int] = sql_orm.mapped_column(
         primary_key=True, autoincrement=True

@@ -17,7 +17,9 @@ session = sql_orm.scoped_session(
 
 
 class Base(sql_orm.MappedAsDataclass, sql_orm.DeclarativeBase):  # noqa: D101
-    pass
+    @sql_orm.declared_attr.directive
+    def __tablename__(self: "Base") -> str:  # noqa: D105
+        return self.__name__.lower()
 
 
 def init() -> None:
