@@ -7,7 +7,7 @@ from . import app
 
 _PK = typing.Annotated[int, sql_orm.mapped_column(primary_key=True, autoincrement=True)]
 
-session = sql_orm.scoped_session(
+_session = sql_orm.scoped_session(
     sql_orm.sessionmaker(
         autocommit=False,
         autoflush=False,
@@ -69,7 +69,7 @@ class Post(Base, kw_only=True):
 
 def init() -> None:
     """Create database tables and set up session handling in Flask."""
-    Base.metadata.create_all(bind=session.get_bind())
+    Base.metadata.create_all(bind=_session.get_bind())
 
     # https://docs.sqlalchemy.org/en/20/orm/contextual.html#using-thread-local-scope-with-web-applications
-    app.teardown_appcontext(lambda _exception: session.remove())
+    app.teardown_appcontext(lambda _exception: _session.remove())
