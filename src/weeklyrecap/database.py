@@ -67,9 +67,9 @@ class Post(Base, kw_only=True):
     )
 
 
-def init() -> None:
-    """Create database tables and set up session handling in Flask."""
-    Base.metadata.create_all(bind=_session.get_bind())
+@app.teardown_appcontext
+def _teardown(_exception: BaseException | None) -> None:
+    _session.remove()
 
-    # https://docs.sqlalchemy.org/en/20/orm/contextual.html#using-thread-local-scope-with-web-applications
-    app.teardown_appcontext(lambda _exception: _session.remove())
+
+Base.metadata.create_all(bind=_session.get_bind())

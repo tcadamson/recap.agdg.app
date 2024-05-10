@@ -19,6 +19,5 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SQLALCHEMY_DATABASE_URI"
 
 pathlib.Path(app.instance_path).mkdir(exist_ok=True)
 
+# Import modules to register app decorators
 from . import database, routes, scraper  # noqa: E402, F401
-
-database.init()
