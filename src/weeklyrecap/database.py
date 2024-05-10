@@ -5,6 +5,8 @@ import sqlalchemy.orm as sql_orm
 
 from . import app
 
+_PK = typing.Annotated[int, sql_orm.mapped_column(primary_key=True, autoincrement=True)]
+
 session = sql_orm.scoped_session(
     sql_orm.sessionmaker(
         autocommit=False,
@@ -29,10 +31,44 @@ class Base(sql_orm.MappedAsDataclass, sql_orm.DeclarativeBase):
         return self.__name__.lower()
 
 
+class Game(Base):
+    """Represents a game in the database."""
+
+    # Columns
+    game_id: sql_orm.Mapped[_PK] = sql_orm.mapped_column(init=False)
+    title: sql_orm.Mapped[str] = sql_orm.mapped_column(
+        sql.Text(collation="nocase"), unique=True
+    )
+    dev: sql_orm.Mapped[str] = sql_orm.mapped_column(default=None)
+    tools: sql_orm.Mapped[str] = sql_orm.mapped_column(default=None)
+    web: sql_orm.Mapped[str] = sql_orm.mapped_column(default=None)
+
+    # Relationships
+    posts: sql_orm.Mapped[list["Post"]] = sql_orm.relationship(
+        back_populates="game", cascade="all, delete-orphan", default_factory=list
+    )
+
+
+class Post(Base, kw_only=True):
+    """Represents a post associated with a game in the database."""
+
+    # Columns
+    post_id: sql_orm.Mapped[_PK] = sql_orm.mapped_column(init=False)
+    game_id: sql_orm.Mapped[int] = sql_orm.mapped_column(
+        sql.ForeignKey("game.game_id", onupdate="cascade", ondelete="cascade")
+    )
+    unix: sql_orm.Mapped[int]
+    filename: sql_orm.Mapped[str] = sql_orm.mapped_column(default=None)
+    progress: sql_orm.Mapped[str]
+
+    # Relationships
+    game: sql_orm.Mapped["Game"] = sql_orm.relationship(
+        back_populates="posts", default=None
+    )
+
+
 def init() -> None:
     """Create database tables and set up session handling in Flask."""
-    from . import models  # noqa: F401
-
     Base.metadata.create_all(bind=session.get_bind())
 
     # https://docs.sqlalchemy.org/en/20/orm/contextual.html#using-thread-local-scope-with-web-applications
