@@ -67,6 +67,11 @@ class Post(Base, kw_only=True):
     )
 
 
+def get_game(title: str) -> Game | None:
+    """Get the game from the database using the title key."""
+    return _session.scalar(sql.select(Game).where(Game.title == title))
+
+
 @app.teardown_appcontext
 def _teardown(_exception: BaseException | None) -> None:
     _session.remove()
