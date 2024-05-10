@@ -16,7 +16,7 @@ session = sql_orm.scoped_session(
 )
 
 
-class Base(sql_orm.DeclarativeBase, sql_orm.MappedAsDataclass):  # noqa: D101
+class Base(sql_orm.MappedAsDataclass, sql_orm.DeclarativeBase):  # noqa: D101
     pass
 
 
