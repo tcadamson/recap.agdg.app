@@ -16,7 +16,14 @@ session = sql_orm.scoped_session(
 )
 
 
-class Base(sql_orm.MappedAsDataclass, sql_orm.DeclarativeBase):  # noqa: D101
+class Base(sql_orm.MappedAsDataclass, sql_orm.DeclarativeBase):
+    """Define a declarative base class with common elements for derived model classes.
+
+    Note that dataclass arguments (e.g. kw_only) should be passed as arguments to the
+    derived model classes and not inherited. See:
+    https://github.com/sqlalchemy/sqlalchemy/discussions/10219
+    """
+
     @sql_orm.declared_attr.directive
     def __tablename__(self: "Base") -> str:  # noqa: D105
         return self.__name__.lower()
