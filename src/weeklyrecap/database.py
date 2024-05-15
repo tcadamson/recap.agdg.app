@@ -18,7 +18,7 @@ _session = sql_orm.scoped_session(
 )
 
 
-class Base(sql_orm.MappedAsDataclass, sql_orm.DeclarativeBase):
+class _Base(sql_orm.MappedAsDataclass, sql_orm.DeclarativeBase):
     """Define a declarative base class with common elements for derived model classes.
 
     Note that dataclass arguments (e.g. kw_only) should be passed as arguments to the
@@ -27,11 +27,11 @@ class Base(sql_orm.MappedAsDataclass, sql_orm.DeclarativeBase):
     """
 
     @sql_orm.declared_attr.directive
-    def __tablename__(self: "Base") -> str:  # noqa: D105
+    def __tablename__(self: "_Base") -> str:
         return self.__name__.lower()
 
 
-class Game(Base):
+class Game(_Base):
     """Represents a game in the database."""
 
     game_id: sql_orm.Mapped[_PK] = sql_orm.mapped_column(init=False)
@@ -47,7 +47,7 @@ class Game(Base):
     )
 
 
-class Post(Base, kw_only=True):
+class Post(_Base, kw_only=True):
     """Represents a post associated with a game in the database."""
 
     post_id: sql_orm.Mapped[_PK] = sql_orm.mapped_column(init=False)
@@ -73,4 +73,4 @@ def _teardown(_exception: BaseException | None) -> None:
     _session.remove()
 
 
-Base.metadata.create_all(bind=_session.get_bind())
+_Base.metadata.create_all(bind=_session.get_bind())
