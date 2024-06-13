@@ -77,7 +77,7 @@ def _post_has_subject(post: _Post, subject: str) -> bool:
     )
 
 
-def _request_json(endpoint: _Endpoint) -> object:
+def _request_json(endpoint: _Endpoint | str) -> object:
     try:
         return typing.cast(
             object, requests.get(endpoint, timeout=_REQUEST_TIMEOUT_SECONDS).json()
