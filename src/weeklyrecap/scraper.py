@@ -1,6 +1,5 @@
 import contextlib
 import enum
-import functools
 import re
 import typing
 
@@ -78,7 +77,6 @@ def _post_has_subject(post: _Post, subject: str) -> bool:
     )
 
 
-@functools.cache
 def _request_json(endpoint: _Endpoint) -> object:
     try:
         return typing.cast(
