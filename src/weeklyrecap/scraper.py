@@ -1,3 +1,4 @@
+import contextlib
 import enum
 import functools
 import re
@@ -103,30 +104,29 @@ def _request_thread_ids(subject: str) -> list[int]:
         ]
 
     if _is_archive(archive):
-        archive_cache = []
-
         try:
-            archive_cache += list(
-                map(int, typing.cast(set[bytes], _redis.smembers(_RedisKey.ARCHIVE)))
-            )
-
-            _redis.delete(_RedisKey.ARCHIVE)
-            _redis.sadd(_RedisKey.ARCHIVE, *archive)
+            _redis.ping()
         except redis.RedisError as e:
-            app.logger.error("Redis operations failed: %r", e)
+            app.logger.error("Redis server unavailable: %r", e)
 
-        for thread in map(
-            _request_json,
-            (
-                _Endpoint.THREAD % thread_id
-                for thread_id in archive
-                if thread_id not in archive_cache
-            ),
-        ):
-            if _is_thread(thread) and _post_has_subject(
-                post := thread["posts"][0], subject
-            ):
-                thread_ids.append(post["no"])
+        with contextlib.suppress(redis.RedisError):
+            for thread_id in map(int, _redis.scan_iter()):
+                if thread_id in archive:
+                    archive.remove(thread_id)
+                else:
+                    _redis.delete(str(thread_id))
+
+        for thread_id in archive:
+            thread = _request_json(_Endpoint.THREAD % thread_id)
+
+            if _is_thread(thread):
+                if _post_has_subject(thread["posts"][0], subject):
+                    thread_ids.append(thread_id)
+            else:
+                continue
+
+            with contextlib.suppress(redis.RedisError):
+                _redis.set(str(thread_id), "")
 
     return sorted(thread_ids)
 
