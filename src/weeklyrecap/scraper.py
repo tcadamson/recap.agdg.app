@@ -83,7 +83,7 @@ def _request_json(endpoint: _Endpoint | str) -> object:
             object, requests.get(endpoint, timeout=_REQUEST_TIMEOUT_SECONDS).json()
         )
     except requests.RequestException as e:
-        app.logger.error("Request failed for %s: %r", endpoint, e)
+        app.logger.warning("Request failed for %s: %r", endpoint, e)
 
     return None
 
@@ -105,7 +105,7 @@ def _request_thread_ids(subject: str) -> list[int]:
         try:
             _redis_session.ping()
         except redis.RedisError as e:
-            app.logger.error("Redis server unavailable: %r", e)
+            app.logger.warning("Redis server unavailable: %r", e)
 
         with contextlib.suppress(redis.RedisError):
             for thread_id in map(int, _redis_session.scan_iter()):
