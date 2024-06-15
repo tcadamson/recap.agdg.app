@@ -62,13 +62,7 @@ def _is_thread(thread: object) -> typing.TypeGuard[_Thread]:
 
 
 def _post_has_subject(post: _Post, subject: str) -> bool:
-    return bool(
-        subject
-        and re.search(
-            rf"\b{re.escape(subject.casefold())}\b",
-            post["sub"].casefold(),
-        )
-    )
+    return bool(subject and re.search(rf"(?i)\b{re.escape(subject)}\b", post["sub"]))
 
 
 def _request_json(endpoint: _Endpoint | str) -> object:
