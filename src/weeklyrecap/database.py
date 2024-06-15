@@ -3,7 +3,7 @@ import typing
 import sqlalchemy as sql
 import sqlalchemy.orm as sql_orm
 
-from . import app
+from . import app, config
 
 _PK = typing.Annotated[int, sql_orm.mapped_column(primary_key=True, autoincrement=True)]
 
@@ -11,9 +11,7 @@ _session = sql_orm.scoped_session(
     sql_orm.sessionmaker(
         autocommit=False,
         autoflush=False,
-        bind=sql.create_engine(
-            typing.cast(str, app.config.get("SQLALCHEMY_DATABASE_URI"))
-        ),
+        bind=sql.create_engine(config.sqlalchemy_database_uri),
     )
 )
 
