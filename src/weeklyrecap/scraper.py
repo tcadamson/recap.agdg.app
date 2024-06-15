@@ -20,10 +20,6 @@ class _Endpoint(enum.StrEnum):
     MEDIA = "https://i.4cdn.org/vg/%d%s"
 
 
-class _RedisKey(enum.StrEnum):
-    ARCHIVE = enum.auto()
-
-
 class _Post(typing.TypedDict):
     no: int
     sub: typing.NotRequired[str]
