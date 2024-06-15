@@ -8,8 +8,6 @@ import requests
 
 from . import app
 
-_REQUEST_TIMEOUT_SECONDS: typing.Final = 10
-
 _redis_session = redis.Redis()
 
 
@@ -75,9 +73,7 @@ def _post_has_subject(post: _Post, subject: str) -> bool:
 
 def _request_json(endpoint: _Endpoint | str) -> object:
     try:
-        return typing.cast(
-            object, requests.get(endpoint, timeout=_REQUEST_TIMEOUT_SECONDS).json()
-        )
+        return typing.cast(object, requests.get(endpoint, timeout=10).json())
     except requests.RequestException as e:
         app.logger.warning("Request failed for %s: %r", endpoint, e)
 
