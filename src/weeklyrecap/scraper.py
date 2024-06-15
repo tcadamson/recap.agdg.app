@@ -98,11 +98,6 @@ def _request_thread_ids(subject: str) -> list[int]:
         ]
 
     if _is_archive(archive):
-        try:
-            _redis_session.ping()
-        except redis.RedisError as e:
-            app.logger.warning("Redis server unavailable: %r", e)
-
         with contextlib.suppress(redis.RedisError):
             for thread_id in map(int, _redis_session.scan_iter()):
                 if thread_id in archive:
@@ -127,4 +122,9 @@ def _request_thread_ids(subject: str) -> list[int]:
 
 @app.cli.command("scrape")
 def scrape() -> None:  # noqa: D103
+    try:
+        _redis_session.ping()
+    except redis.RedisError as e:
+        app.logger.warning("Redis server unavailable: %r", e)
+
     app.logger.info(_request_thread_ids("agdg"))
