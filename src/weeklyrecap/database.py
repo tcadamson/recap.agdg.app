@@ -5,7 +5,9 @@ import sqlalchemy.orm as sql_orm
 
 from . import app, config
 
-_PK = typing.Annotated[int, sql_orm.mapped_column(primary_key=True, autoincrement=True)]
+_PrimaryKey = typing.Annotated[
+    int, sql_orm.mapped_column(primary_key=True, autoincrement=True)
+]
 
 _session = sql_orm.scoped_session(
     sql_orm.sessionmaker(
@@ -16,54 +18,43 @@ _session = sql_orm.scoped_session(
 )
 
 
-class _Base(sql_orm.MappedAsDataclass, sql_orm.DeclarativeBase):
-    """Define a declarative base class with common elements for derived model classes.
-
-    Note that dataclass arguments (e.g. kw_only) should be passed as arguments to the
-    derived model classes and not inherited. See:
-    https://github.com/sqlalchemy/sqlalchemy/discussions/10219
-    """
-
-    @sql_orm.declared_attr.directive
-    def __tablename__(self: "_Base") -> str:
-        return self.__name__.lower()
+class _Base(sql_orm.DeclarativeBase):
+    pass
 
 
-class Game(_Base):
-    """Represents a game in the database."""
+class _Game(_Base):
+    __tablename__ = "game"
 
-    game_id: sql_orm.Mapped[_PK] = sql_orm.mapped_column(init=False)
+    game_id: sql_orm.Mapped[_PrimaryKey]
     title: sql_orm.Mapped[str] = sql_orm.mapped_column(
         sql.Text(collation="nocase"), unique=True
     )
-    dev: sql_orm.Mapped[str] = sql_orm.mapped_column(default=None)
-    tools: sql_orm.Mapped[str] = sql_orm.mapped_column(default=None)
-    web: sql_orm.Mapped[str] = sql_orm.mapped_column(default=None)
+    dev: sql_orm.Mapped[str | None]
+    tools: sql_orm.Mapped[str | None]
+    web: sql_orm.Mapped[str | None]
 
-    posts: sql_orm.Mapped[list["Post"]] = sql_orm.relationship(
-        back_populates="game", cascade="all, delete-orphan", default_factory=list
+    posts: sql_orm.Mapped[list["_Post"]] = sql_orm.relationship(
+        back_populates="game", cascade="all, delete-orphan"
     )
 
 
-class Post(_Base, kw_only=True):
-    """Represents a post associated with a game in the database."""
+class _Post(_Base):
+    __tablename__ = "post"
 
-    post_id: sql_orm.Mapped[_PK] = sql_orm.mapped_column(init=False)
+    post_id: sql_orm.Mapped[_PrimaryKey]
     game_id: sql_orm.Mapped[int] = sql_orm.mapped_column(
         sql.ForeignKey("game.game_id", onupdate="cascade", ondelete="cascade")
     )
     unix: sql_orm.Mapped[int]
-    filename: sql_orm.Mapped[str] = sql_orm.mapped_column(default=None)
+    filename: sql_orm.Mapped[str | None]
     progress: sql_orm.Mapped[str]
 
-    game: sql_orm.Mapped["Game"] = sql_orm.relationship(
-        back_populates="posts", default=None
-    )
+    game: sql_orm.Mapped["_Game"] = sql_orm.relationship(back_populates="posts")
 
 
-def get_game(title: str) -> Game | None:
+def get_game(title: str) -> _Game | None:
     """Get the game from the database using the title key."""
-    return _session.scalar(sql.select(Game).where(Game.title == title))
+    return _session.scalar(sql.select(_Game).filter_by(title=title))
 
 
 @app.teardown_appcontext
