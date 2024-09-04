@@ -57,6 +57,28 @@ def get_game(title: str) -> _Game | None:
     return _session.scalar(sql.select(_Game).filter_by(title=title))
 
 
+def add_game(title: str) -> _Game:
+    """Add the game to the database."""
+    _session.add(game := _Game(title=title))
+    _session.flush()
+
+    return game
+
+
+def add_post(game_id: int, unix: int, filename: str | None, progress: str) -> _Post:
+    """Add the post to the database."""
+    _session.add(
+        post := _Post(game_id=game_id, unix=unix, filename=filename, progress=progress)
+    )
+
+    return post
+
+
+def commit() -> None:
+    """Commit pending changes to the database."""
+    _session.commit()
+
+
 @app.teardown_appcontext
 def _remove_session(_exception: BaseException | None) -> None:
     _session.remove()

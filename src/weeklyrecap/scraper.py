@@ -1,12 +1,13 @@
 import contextlib
 import enum
+import html
 import re
 import typing
 
 import redis
 import requests
 
-from . import app
+from . import FIELDS, app, database
 
 _redis_session = redis.Redis()
 
@@ -20,7 +21,11 @@ class _Endpoint(enum.StrEnum):
 
 class _Post(typing.TypedDict):
     no: int
+    time: int
+    tim: typing.NotRequired[int]
+    ext: typing.NotRequired[str]
     sub: typing.NotRequired[str]
+    com: typing.NotRequired[str]
 
 
 class _Thread(typing.TypedDict):
@@ -62,7 +67,26 @@ def _is_thread(thread: object) -> typing.TypeGuard[_Thread]:
 
 
 def _post_has_subject(post: _Post, subject: str) -> bool:
-    return bool(subject and re.search(rf"(?i)\b{re.escape(subject)}\b", post["sub"]))
+    return bool(
+        "sub" in post
+        and subject
+        and re.search(rf"(?i)\b{re.escape(subject)}\b", post["sub"])
+    )
+
+
+def _normalize_comment(comment: str) -> str:
+    comment = html.unescape(comment)
+
+    for normalize_pattern in [
+        r"\\(\S)",
+        r"<span.+?>(.+?)</span>",
+        r"\s?(::):*\s?",
+        r"\s?(->)\s?",
+        r"\s?(<br>)\s?",
+    ]:
+        comment = re.sub(normalize_pattern, r"\1", comment)
+
+    return comment
 
 
 def _request_json(endpoint: _Endpoint | str) -> object:
@@ -110,6 +134,47 @@ def _request_thread_ids(subject: str) -> list[int]:
     return sorted(thread_ids)
 
 
+def _scrape_thread_id(thread_id: int) -> None:
+    thread = _request_json(_Endpoint.THREAD % thread_id)
+
+    if _is_thread(thread):
+        for post in thread["posts"]:
+            if not (comment := post.get("com")):
+                continue
+
+            if not (
+                recap_match := re.search(
+                    r"::((?:(?!->|<br>).)+?)(?:->((?:(?!<br>).)+?))?::(.+$)",
+                    _normalize_comment(comment),
+                )
+            ):
+                continue
+
+            title, title_change, content = recap_match.groups()
+
+            if title_change and not database.get_game(title_change):
+                title = title_change
+
+            game = database.get_game(title) or database.add_game(title)
+
+            for field in FIELDS:
+                if field_match := re.search(
+                    rf"(?i)(?:<br>)+{re.escape(field)}::((?:(?!::|<br>).)+?)(?=$|<br>)",
+                    content,
+                ):
+                    setattr(game, field, field_match.group(1))
+
+            if progress_match := re.search(r".+::(?:.*?(?:<br>)+)*(.+)$", content):
+                database.add_post(
+                    game.game_id,
+                    post["time"],
+                    f"{post["tim"]}{post["ext"]}" if "tim" in post else None,
+                    progress_match.group(1),
+                )
+
+        database.commit()
+
+
 @app.cli.command("scrape")
 def scrape() -> None:  # noqa: D103
     try:
@@ -117,4 +182,5 @@ def scrape() -> None:  # noqa: D103
     except redis.RedisError as e:
         app.logger.warning("Redis server unavailable: %r", e)
 
-    app.logger.info(_request_thread_ids("agdg"))
+    for thread_id in _request_thread_ids("agdg"):
+        _scrape_thread_id(thread_id)

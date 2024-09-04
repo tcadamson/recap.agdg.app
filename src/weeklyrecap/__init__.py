@@ -4,6 +4,8 @@ import flask
 import pydantic
 import pydantic_settings
 
+FIELDS = ["dev", "tools", "web"]
+
 app = flask.Flask(
     __name__,
     instance_path=(
