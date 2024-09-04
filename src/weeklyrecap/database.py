@@ -58,7 +58,7 @@ def get_game(title: str) -> _Game | None:
 
 
 @app.teardown_appcontext
-def _teardown(_exception: BaseException | None) -> None:
+def _remove_session(_exception: BaseException | None) -> None:
     _session.remove()
 
 
