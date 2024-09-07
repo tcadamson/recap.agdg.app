@@ -19,7 +19,7 @@ def _timestamp_to_datestamp(timestamp: float) -> int:
     week_threshold = week_length // 2
     week = (
         monday_date.day
-        # First weekday maps to offset of 0, 1, 2, 3, -3, -2, -1
+        # Offset based on first weekday of month (0, 1, 2, 3, -3, -2, -1)
         + (
             (monday_date.replace(day=1).weekday() - week_threshold - 1) % week_length
             - week_threshold
