@@ -1,11 +1,12 @@
 import datetime
 
 import dateutil.relativedelta
+import flask
 
 from . import app
 
 
-def _timestamp_to_datestamp(timestamp: int) -> int:
+def _timestamp_to_datestamp(timestamp: float) -> int:
     monday_date = (
         timestamp_date := datetime.datetime.fromtimestamp(
             float(str(timestamp)[:10]), tz=datetime.UTC
@@ -35,4 +36,9 @@ def _timestamp_to_datestamp(timestamp: int) -> int:
 
 @app.route("/")
 def index() -> str:  # noqa: D103
-    return ""
+    return flask.render_template(
+        "index.html",
+        datestamp=_timestamp_to_datestamp(
+            datetime.datetime.now(datetime.UTC).timestamp()
+        ),
+    )
