@@ -45,7 +45,7 @@ class _Post(_Base):
     game_id: sql_orm.Mapped[int] = sql_orm.mapped_column(
         sql.ForeignKey("game.game_id", onupdate="cascade", ondelete="cascade")
     )
-    unix: sql_orm.Mapped[int]
+    timestamp: sql_orm.Mapped[int]
     filename: sql_orm.Mapped[str | None]
     progress: sql_orm.Mapped[str]
 
@@ -65,10 +65,14 @@ def add_game(title: str) -> _Game:
     return game
 
 
-def add_post(game_id: int, unix: int, filename: str | None, progress: str) -> _Post:
+def add_post(
+    game_id: int, timestamp: int, filename: str | None, progress: str
+) -> _Post:
     """Add the post to the database."""
     _session.add(
-        post := _Post(game_id=game_id, unix=unix, filename=filename, progress=progress)
+        post := _Post(
+            game_id=game_id, timestamp=timestamp, filename=filename, progress=progress
+        )
     )
 
     return post
