@@ -62,3 +62,28 @@ def index() -> str:  # noqa: D103
             datetime.datetime.now(datetime.UTC).timestamp()
         ),
     )
+
+
+@app.route("/archive")
+def archive() -> str:  # noqa: D103
+    return ""
+
+
+@app.route("/leaderboard")
+def leaderboard() -> str:  # noqa: D103
+    return ""
+
+
+@app.route("/view/<int:datestamp>")
+def view(_datestamp: int) -> str:  # noqa: D103
+    return ""
+
+
+@app.route("/games", methods=["GET", "POST"])
+def games() -> str:  # noqa: D103
+    return ""
+
+
+@app.route("/game/<int:game_id>")
+def game(_game_id: int) -> str:  # noqa: D103
+    return ""
