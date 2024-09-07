@@ -1,4 +1,6 @@
+import calendar
 import datetime
+import re
 
 import dateutil.relativedelta
 import flask
@@ -32,6 +34,16 @@ def _timestamp_to_datestamp(timestamp: float) -> int:
         monday_date += dateutil.relativedelta.relativedelta(months=1)
 
     return int(f"{monday_date.strftime("%y%m")}{week}")
+
+
+@app.template_filter()
+def full_datestamp(datestamp: int) -> str:  # noqa: D103
+    if not (datestamp_match := re.search(r"^(\d{2})(\d{2})(\d)$", str(datestamp))):
+        return ""
+
+    year, month, week = datestamp_match.groups()
+
+    return f"{calendar.month_name[int(month)]} {2000 + int(year)}, week {week}"
 
 
 @app.route("/")
