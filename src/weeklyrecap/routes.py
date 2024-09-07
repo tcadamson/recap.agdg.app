@@ -4,6 +4,7 @@ import re
 
 import dateutil.relativedelta
 import flask
+import werkzeug.exceptions
 
 from . import app
 
@@ -44,6 +45,13 @@ def full_datestamp(datestamp: int) -> str:  # noqa: D103
     year, month, week = datestamp_match.groups()
 
     return f"{calendar.month_name[int(month)]} {2000 + int(year)}, week {week}"
+
+
+@app.errorhandler(werkzeug.exceptions.HTTPException)
+def error(exception: werkzeug.exceptions.HTTPException) -> tuple[str, int]:  # noqa: D103
+    return flask.render_template(
+        "error.html", exception=exception
+    ), exception.code or 500
 
 
 @app.route("/")
