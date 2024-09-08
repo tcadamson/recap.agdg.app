@@ -52,23 +52,20 @@ class _Post(_Base):
     game: sql_orm.Mapped["_Game"] = sql_orm.relationship(back_populates="posts")
 
 
-def get_game(title: str) -> _Game | None:
-    """Get the game from the database using the title key."""
+def get_game(title: str) -> _Game | None:  # noqa: D103
     return _session.scalar(sql.select(_Game).filter_by(title=title))
 
 
-def add_game(title: str) -> _Game:
-    """Add the game to the database."""
+def add_game(title: str) -> _Game:  # noqa: D103
     _session.add(game := _Game(title=title))
     _session.flush()
 
     return game
 
 
-def add_post(
+def add_post(  # noqa: D103
     game_id: int, timestamp: int, filename: str | None, progress: str
 ) -> _Post:
-    """Add the post to the database."""
     _session.add(
         post := _Post(
             game_id=game_id, timestamp=timestamp, filename=filename, progress=progress
@@ -78,8 +75,7 @@ def add_post(
     return post
 
 
-def commit() -> None:
-    """Commit pending changes to the database."""
+def commit() -> None:  # noqa: D103
     _session.commit()
 
 

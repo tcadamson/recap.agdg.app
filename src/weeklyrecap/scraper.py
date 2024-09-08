@@ -176,8 +176,7 @@ def _scrape_thread_id(thread_id: int) -> None:
 
 
 @app.cli.command("scrape")
-def scrape() -> None:
-    """Scrape all /agdg/ threads and add valid recap posts to the database."""
+def scrape() -> None:  # noqa: D103
     try:
         _redis_session.ping()
     except redis.RedisError as e:
