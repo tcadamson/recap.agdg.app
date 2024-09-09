@@ -143,14 +143,14 @@ def _scrape_thread_id(thread_id: int) -> None:
                 continue
 
             if not (
-                recap_match := re.search(
+                text_match := re.search(
                     r"::((?:(?!->|<br>).)+?)(?:->((?:(?!<br>).)+?))?::(.+$)",
                     _normalize_comment(comment),
                 )
             ):
                 continue
 
-            title, title_change, content = recap_match.groups()
+            title, title_change, text = text_match.groups()
 
             if title_change and not database.get_game(title_change):
                 title = title_change
@@ -160,11 +160,11 @@ def _scrape_thread_id(thread_id: int) -> None:
             for field in FIELDS:
                 if field_match := re.search(
                     rf"(?i)(?:<br>)+{re.escape(field)}::((?:(?!::|<br>).)+?)(?=$|<br>)",
-                    content,
+                    text,
                 ):
                     setattr(game, field, field_match.group(1))
 
-            if progress_match := re.search(r".+::(?:.*?(?:<br>)+)*(.+)$", content):
+            if progress_match := re.search(r".+::(?:.*?(?:<br>)+)*(.+)$", text):
                 database.add_post(
                     game.game_id,
                     post["time"],
