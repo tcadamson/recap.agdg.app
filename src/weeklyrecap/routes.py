@@ -2,7 +2,6 @@ import calendar
 import datetime
 import re
 
-import dateutil.relativedelta
 import flask
 import werkzeug.exceptions
 
@@ -15,24 +14,19 @@ def _timestamp_to_datestamp(timestamp: float) -> int:
             float(str(timestamp)[:10]), tz=datetime.UTC
         )
     ) - datetime.timedelta(days=timestamp_date.weekday())
-    week_length = 7
-    week_threshold = week_length // 2
+    month_weekday, month_days = calendar.monthrange(monday_date.year, monday_date.month)
+    week_delta = datetime.timedelta(weeks=1)
+    week_threshold = week_delta.days // 2
     week = (
         monday_date.day
-        # Offset based on first weekday of month (0, 1, 2, 3, -3, -2, -1)
-        + (
-            (monday_date.replace(day=1).weekday() - week_threshold - 1) % week_length
-            - week_threshold
-        )
+        # Offset: 0, 1, 2, 3, -3, -2, -1 (Monday - Sunday)
+        + ((month_weekday - week_threshold - 1) % week_delta.days - week_threshold)
         - 1
-    ) // week_length + 1
+    ) // week_delta.days + 1
 
-    if (
-        (monday_date + dateutil.relativedelta.relativedelta(day=31)).day
-        - monday_date.day
-    ) < week_threshold:
+    if (month_days - monday_date.day) < week_threshold:
         week = 1
-        monday_date += dateutil.relativedelta.relativedelta(months=1)
+        monday_date += week_delta
 
     return int(f"{monday_date.strftime("%y%m")}{week}")
 

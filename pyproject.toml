@@ -9,7 +9,6 @@ requires-python = ">=3.11"
 dependencies = [
     "flask",
     "pydantic-settings",
-    "python-dateutil",
     "python-dotenv",
     "redis",
     "sqlalchemy",
