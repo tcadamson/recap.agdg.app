@@ -7,7 +7,7 @@ import typing
 import redis
 import requests
 
-from . import FIELDS, app, database
+from . import app, common, database
 
 _redis_session = redis.Redis()
 
@@ -157,7 +157,7 @@ def _scrape_thread_id(thread_id: int) -> None:
 
             game = database.get_game(title) or database.add_game(title)
 
-            for field in FIELDS:
+            for field in common.FIELDS:
                 if field_match := re.search(
                     rf"(?i)(?:<br>)+{re.escape(field)}::((?:(?!::|<br>).)+?)(?=$|<br>)",
                     text,
