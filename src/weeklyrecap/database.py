@@ -59,6 +59,8 @@ def get_game(title: str) -> _Game | None:  # noqa: D103
 
 def add_game(title: str) -> _Game:  # noqa: D103
     _session.add(game := _Game(title=title))
+
+    # Force primary key assignment (autoflush only assigns primary key in queries)
     _session.flush()
 
     return game

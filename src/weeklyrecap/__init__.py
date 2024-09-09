@@ -34,4 +34,5 @@ except pydantic.ValidationError as e:
 if not instance_path.exists():
     instance_path.mkdir()
 
+# Import any modules that use Flask decorators
 from . import database, routes, scraper  # noqa: E402, F401
