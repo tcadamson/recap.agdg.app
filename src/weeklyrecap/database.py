@@ -76,7 +76,7 @@ def add_post(  # noqa: D103
     return post
 
 
-def commit() -> None:  # noqa: D103
+def commit_session() -> None:  # noqa: D103
     _session.commit()
 
 

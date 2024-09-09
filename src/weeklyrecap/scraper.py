@@ -172,7 +172,7 @@ def _scrape_thread_id(thread_id: int) -> None:
                     progress_match.group(1),
                 )
 
-        database.commit()
+        database.commit_session()
 
 
 @app.cli.command("scrape")
