@@ -1,8 +1,9 @@
 import typing
 
+import sqlalchemy.ext.hybrid
 import sqlalchemy.orm
 
-from . import app, config
+from . import app, common, config
 
 _PrimaryKey = typing.Annotated[
     int, sqlalchemy.orm.mapped_column(primary_key=True, autoincrement=True)
@@ -44,6 +45,7 @@ class _Post(_Base):
     game_id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(
         sqlalchemy.ForeignKey("game.game_id", onupdate="cascade", ondelete="cascade")
     )
+    datestamp: sqlalchemy.orm.Mapped[int]
     timestamp: sqlalchemy.orm.Mapped[int]
     filename: sqlalchemy.orm.Mapped[str | None]
     progress: sqlalchemy.orm.Mapped[str]
@@ -51,6 +53,18 @@ class _Post(_Base):
     game: sqlalchemy.orm.Mapped["_Game"] = sqlalchemy.orm.relationship(
         back_populates="posts"
     )
+
+    @sqlalchemy.ext.hybrid.hybrid_property
+    def year(self) -> int:
+        return common.datestamp_year(self.datestamp)
+
+    @sqlalchemy.ext.hybrid.hybrid_property
+    def month(self) -> int:
+        return common.datestamp_month(self.datestamp)
+
+    @sqlalchemy.ext.hybrid.hybrid_property
+    def week(self) -> int:
+        return common.datestamp_week(self.datestamp)
 
 
 def get_game(title: str) -> _Game | None:  # noqa: D103
@@ -71,7 +85,11 @@ def add_post(  # noqa: D103
 ) -> _Post:
     _session.add(
         post := _Post(
-            game_id=game_id, timestamp=timestamp, filename=filename, progress=progress
+            game_id=game_id,
+            datestamp=common.timestamp_to_datestamp(timestamp),
+            timestamp=timestamp,
+            filename=filename,
+            progress=progress,
         )
     )
 
