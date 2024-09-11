@@ -9,7 +9,7 @@ from . import app, common
 
 
 @app.template_filter()
-def full_datestamp(datestamp: int) -> str:  # noqa: D103
+def datestamp_text(datestamp: int) -> str:  # noqa: D103
     if not (datestamp_match := re.search(r"^(\d{2})(\d{2})(\d)$", str(datestamp))):
         return ""
 
