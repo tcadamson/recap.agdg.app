@@ -5,16 +5,16 @@
 {% block content %}
 <h1 class="text-center">{{self.title()}}</h1>
 <div class="catalog catalog-variant">
-    {% for year, datestamps in datestamps | groupby("year") | reverse %}
+    {% for year, year_data in archive_data | items | reverse %}
     <section class="box box-variant box-container">
-        <h2 class="text-center">{{year | full_year}} ({{game_counts[loop.index0]}} games):</h2>
+        <h2 class="text-center">{{year}} ({{year_data["game_count"]}} games):</h2>
         <div>
-            {% for month, datestamps in datestamps | groupby("month") %}
+            {% for month, month_datestamps in year_data["months"] | items %}
             <div class="row-container">
-                <p>{{month | calendar_month}}</p>
+                <p>{{month | month_text}}</p>
                 <p>
-                    {% for datestamp in datestamps %}
-                    <a href="{{url_for("view", datestamp = datestamp.values() | join)}}">{{datestamp["week"]}}</a>
+                    {% for datestamp in month_datestamps %}
+                    <a href="{{url_for("view", datestamp = datestamp)}}">{{loop.index}}</a>
                     {{-" /" if not loop.last}}
                     {% endfor %}
                 </p>

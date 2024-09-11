@@ -1,10 +1,12 @@
 import calendar
+import collections
 import datetime
+import typing
 
 import flask
 import werkzeug.exceptions
 
-from . import app, common
+from . import app, common, database
 
 
 @app.template_filter()
@@ -40,7 +42,21 @@ def index() -> str:  # noqa: D103
 
 @app.route("/archive")
 def archive() -> str:  # noqa: D103
-    return ""
+    archive_data = {
+        year: {
+            "game_count": game_count,
+            "months": collections.defaultdict(list),
+        }
+        for year, game_count in database.get_game_counts()
+    }
+
+    for datestamp in database.get_datestamps():
+        typing.cast(
+            dict[int, list[int]],
+            archive_data[common.datestamp_year(datestamp)]["months"],
+        )[common.datestamp_month(datestamp)].append(datestamp)
+
+    return flask.render_template("archive.html", archive_data=archive_data)
 
 
 @app.route("/leaderboard")
