@@ -15,7 +15,12 @@ def full_datestamp(datestamp: int) -> str:  # noqa: D103
 
     year, month, week = datestamp_match.groups()
 
-    return f"{calendar.month_name[int(month)]} {2000 + int(year)}, Week {week}"
+    return f"{month_text(int(month))} {2000 + int(year)}, Week {week}"
+
+
+@app.template_filter()
+def month_text(month: int) -> str:  # noqa: D103
+    return calendar.month_name[month]
 
 
 @app.errorhandler(werkzeug.exceptions.HTTPException)
