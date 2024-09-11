@@ -1,6 +1,5 @@
 import calendar
 import datetime
-import re
 
 import flask
 import werkzeug.exceptions
@@ -10,12 +9,11 @@ from . import app, common
 
 @app.template_filter()
 def datestamp_text(datestamp: int) -> str:  # noqa: D103
-    if not (datestamp_match := re.search(r"^(\d{2})(\d{2})(\d)$", str(datestamp))):
-        return ""
-
-    year, month, week = datestamp_match.groups()
-
-    return f"{month_text(int(month))} {2000 + int(year)}, Week {week}"
+    return (
+        f"{month_text(common.datestamp_month(datestamp))} "
+        f"{common.datestamp_year(datestamp)} / Week "
+        f"{common.datestamp_week(datestamp)}"
+    )
 
 
 @app.template_filter()
