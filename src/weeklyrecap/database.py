@@ -71,19 +71,22 @@ def get_game(title: str) -> Game | None:  # noqa: D103
     return _session.scalar(sqlalchemy.select(Game).filter_by(title=title))
 
 
-def get_game_counts() -> list[tuple[int, int]]:  # noqa: D103
-    return [
-        row.tuple()
-        for row in _session.execute(
-            sqlalchemy.select(
-                Post.year, sqlalchemy.func.count(Post.game_id.distinct())
-            ).group_by(Post.year)
+def get_game_counts() -> list[int]:  # noqa: D103
+    return list(
+        _session.scalars(
+            sqlalchemy.select(sqlalchemy.func.count(Post.game_id.distinct()))
+            .group_by(Post.year)
+            .order_by(Post.year)
         )
-    ]
+    )
 
 
 def get_datestamps() -> list[int]:  # noqa: D103
-    return list(_session.scalars(sqlalchemy.select(Post.datestamp).distinct()))
+    return list(
+        _session.scalars(
+            sqlalchemy.select(Post.datestamp.distinct()).order_by(Post.datestamp)
+        )
+    )
 
 
 def add_game(title: str) -> Game:  # noqa: D103
