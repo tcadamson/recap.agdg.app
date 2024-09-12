@@ -22,7 +22,7 @@ class _Base(sqlalchemy.orm.DeclarativeBase):
     pass
 
 
-class _Game(_Base):
+class Game(_Base):  # noqa: D101
     __tablename__ = "game"
 
     game_id: sqlalchemy.orm.Mapped[_PrimaryKey]
@@ -33,12 +33,12 @@ class _Game(_Base):
     tools: sqlalchemy.orm.Mapped[str | None]
     web: sqlalchemy.orm.Mapped[str | None]
 
-    posts: sqlalchemy.orm.Mapped[list["_Post"]] = sqlalchemy.orm.relationship(
+    posts: sqlalchemy.orm.Mapped[list["Post"]] = sqlalchemy.orm.relationship(
         back_populates="game", cascade="all, delete-orphan"
     )
 
 
-class _Post(_Base):
+class Post(_Base):  # noqa: D101
     __tablename__ = "post"
 
     post_id: sqlalchemy.orm.Mapped[_PrimaryKey]
@@ -50,25 +50,25 @@ class _Post(_Base):
     filename: sqlalchemy.orm.Mapped[str | None]
     progress: sqlalchemy.orm.Mapped[str]
 
-    game: sqlalchemy.orm.Mapped["_Game"] = sqlalchemy.orm.relationship(
+    game: sqlalchemy.orm.Mapped["Game"] = sqlalchemy.orm.relationship(
         back_populates="posts"
     )
 
     @sqlalchemy.ext.hybrid.hybrid_property
-    def year(self) -> int:
+    def year(self) -> int:  # noqa: D102
         return common.datestamp_year(self.datestamp)
 
     @sqlalchemy.ext.hybrid.hybrid_property
-    def month(self) -> int:
+    def month(self) -> int:  # noqa: D102
         return common.datestamp_month(self.datestamp)
 
     @sqlalchemy.ext.hybrid.hybrid_property
-    def week(self) -> int:
+    def week(self) -> int:  # noqa: D102
         return common.datestamp_week(self.datestamp)
 
 
-def get_game(title: str) -> _Game | None:  # noqa: D103
-    return _session.scalar(sqlalchemy.select(_Game).filter_by(title=title))
+def get_game(title: str) -> Game | None:  # noqa: D103
+    return _session.scalar(sqlalchemy.select(Game).filter_by(title=title))
 
 
 def get_game_counts() -> list[tuple[int, int]]:  # noqa: D103
@@ -76,18 +76,18 @@ def get_game_counts() -> list[tuple[int, int]]:  # noqa: D103
         row.tuple()
         for row in _session.execute(
             sqlalchemy.select(
-                _Post.year, sqlalchemy.func.count(_Post.game_id.distinct())
-            ).group_by(_Post.year)
+                Post.year, sqlalchemy.func.count(Post.game_id.distinct())
+            ).group_by(Post.year)
         )
     ]
 
 
 def get_datestamps() -> list[int]:  # noqa: D103
-    return list(_session.scalars(sqlalchemy.select(_Post.datestamp).distinct()))
+    return list(_session.scalars(sqlalchemy.select(Post.datestamp).distinct()))
 
 
-def add_game(title: str) -> _Game:  # noqa: D103
-    _session.add(game := _Game(title=title))
+def add_game(title: str) -> Game:  # noqa: D103
+    _session.add(game := Game(title=title))
 
     # Force primary key assignment (autoflush only assigns primary key in queries)
     _session.flush()
@@ -97,9 +97,9 @@ def add_game(title: str) -> _Game:  # noqa: D103
 
 def add_post(  # noqa: D103
     game_id: int, timestamp: int, filename: str | None, progress: str
-) -> _Post:
+) -> Post:
     _session.add(
-        post := _Post(
+        post := Post(
             game_id=game_id,
             datestamp=common.timestamp_to_datestamp(timestamp),
             timestamp=timestamp,
