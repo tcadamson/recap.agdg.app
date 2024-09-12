@@ -57,7 +57,20 @@ def archive() -> str:  # noqa: D103
 
 @app.route("/leaderboard")
 def leaderboard() -> str:  # noqa: D103
-    return ""
+    superior_ranks = ["emperor"] + ["consul"] * 10 + ["patrician"] * 30
+
+    return flask.render_template(
+        "leaderboard.html",
+        bundles=[
+            {
+                "game_id": game_.game_id,
+                "title": game_.title,
+                "score": score,
+                "rank": superior_ranks[i] if i < len(superior_ranks) else "plebeian",
+            }
+            for i, (game_, score) in enumerate(database.get_game_scores())
+        ],
+    )
 
 
 @app.route("/view/<int:datestamp>")

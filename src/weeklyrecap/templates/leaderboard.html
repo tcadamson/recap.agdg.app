@@ -5,17 +5,14 @@
 {% block content %}
 <h1 class="text-center">{{self.title()}}</h1>
 <div class="catalog catalog-variant">
-    {% for i in range(2) %}
+    {% for rank in bundles | map(attribute="rank") | unique %}
     <section class="box box-variant box-container">
-        {% set top_count = 25 %}
-        {% if loop.first %}
-        <h2 class="text-center">Recaps (top {{top_count}}):</h2>
-        {% endif %}
+        <h2 class="text-center">{{rank | capitalize}}:</h2>
         <div>
-            {% for row in (rows[:top_count] if loop.first else rows[top_count:]) %}
+            {% for bundle in bundles | selectattr("rank", "==", rank) %}
             <div class="row-container">
-                <p class="text-no-overflow"><a href="{{url_for("game", game_id = row["id"])}}">{{row["title"]}}</a></p>
-                <p>{{row["unix_count"]}}</p>
+                <p class="text-no-overflow"><a href="{{url_for("game", game_id = bundle["game_id"])}}">{{bundle["title"]}}</a></p>
+                <p>{{bundle["score"]}}</p>
             </div>
             {% endfor %}
         </div>

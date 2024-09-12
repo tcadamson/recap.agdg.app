@@ -81,6 +81,24 @@ def get_game_counts() -> list[int]:  # noqa: D103
     )
 
 
+def get_game_scores() -> list[tuple[Game, int]]:  # noqa: D103
+    return [
+        row.tuple()
+        for row in _session.execute(
+            sqlalchemy.select(
+                Game,
+                sqlalchemy.func.count(Post.datestamp.distinct()).label("score"),
+            )
+            .join(Game.posts)
+            .group_by(Game.title)
+            .order_by(
+                sqlalchemy.desc("score"),
+                sqlalchemy.desc(sqlalchemy.func.max(Post.timestamp)),
+            )
+        )
+    ]
+
+
 def get_datestamps() -> list[int]:  # noqa: D103
     return list(
         _session.scalars(
