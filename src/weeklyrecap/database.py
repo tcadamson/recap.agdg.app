@@ -5,10 +5,9 @@ import sqlalchemy.orm
 
 from . import app, common, config
 
-_PrimaryKey = typing.Annotated[
+_primary_key = typing.Annotated[
     int, sqlalchemy.orm.mapped_column(primary_key=True, autoincrement=True)
 ]
-
 _session = sqlalchemy.orm.scoped_session(
     sqlalchemy.orm.sessionmaker(
         autocommit=False,
@@ -25,7 +24,7 @@ class _Base(sqlalchemy.orm.DeclarativeBase):
 class Game(_Base):  # noqa: D101
     __tablename__ = "game"
 
-    game_id: sqlalchemy.orm.Mapped[_PrimaryKey]
+    game_id: sqlalchemy.orm.Mapped[_primary_key]
     title: sqlalchemy.orm.Mapped[str] = sqlalchemy.orm.mapped_column(
         sqlalchemy.Text(collation="nocase"), unique=True
     )
@@ -41,7 +40,7 @@ class Game(_Base):  # noqa: D101
 class Post(_Base):  # noqa: D101
     __tablename__ = "post"
 
-    post_id: sqlalchemy.orm.Mapped[_PrimaryKey]
+    post_id: sqlalchemy.orm.Mapped[_primary_key]
     game_id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(
         sqlalchemy.ForeignKey("game.game_id", onupdate="cascade", ondelete="cascade")
     )
