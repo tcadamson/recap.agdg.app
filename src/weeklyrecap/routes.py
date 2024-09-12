@@ -55,12 +55,12 @@ def archive() -> str:  # noqa: D103
     )
 
 
-@app.route("/leaderboard")
-def leaderboard() -> str:  # noqa: D103
+@app.route("/rankings")
+def rankings() -> str:  # noqa: D103
     superior_ranks = ["emperor"] + ["consul"] * 10 + ["patrician"] * 30
 
     return flask.render_template(
-        "leaderboard.html",
+        "rankings.html",
         bundles=[
             {
                 "game_id": game_.game_id,
