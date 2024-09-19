@@ -62,9 +62,8 @@ def rankings() -> str:  # noqa: D103
     return flask.render_template(
         "rankings.html",
         bundles=[
-            {
-                "game_id": game_.game_id,
-                "title": game_.title,
+            game_.serialized
+            | {
                 "score": score,
                 "rank": superior_ranks[i] if i < len(superior_ranks) else "plebeian",
             }

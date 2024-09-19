@@ -18,7 +18,17 @@ _session = sqlalchemy.orm.scoped_session(
 
 
 class _Base(sqlalchemy.orm.DeclarativeBase):
-    pass
+    __abstract__ = True
+
+    @property
+    def serialized(self) -> dict[str, object]:
+        return {
+            key: value
+            for key in [
+                column.key for column in sqlalchemy.inspect(self.__mapper__).columns
+            ]
+            if (value := getattr(self, key, None)) is not None
+        }
 
 
 class Game(_Base):  # noqa: D101
