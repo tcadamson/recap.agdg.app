@@ -100,7 +100,7 @@ def get_archive_data() -> list[tuple[int, int]]:  # noqa: D103
     ]
 
 
-def get_game_scores() -> list[tuple[Game, int]]:  # noqa: D103
+def get_rankings_data() -> list[tuple[Game, int]]:  # noqa: D103
     return [
         row.tuple()
         for row in _session.execute(

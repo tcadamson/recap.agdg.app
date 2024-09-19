@@ -67,7 +67,7 @@ def rankings() -> str:  # noqa: D103
                 "score": score,
                 "rank": superior_ranks[i] if i < len(superior_ranks) else "plebeian",
             }
-            for i, (game_, score) in enumerate(database.get_game_scores())
+            for i, (game_, score) in enumerate(database.get_rankings_data())
         ],
     )
 
