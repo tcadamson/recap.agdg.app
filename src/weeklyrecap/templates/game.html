@@ -7,11 +7,6 @@
 
 {% block content %}
 <h1 class="text-center">{{ self.title() }}</h1>
-{#{% if game_data is nonempty_field_data %}#}
-{#<div class="box box-variant">#}
-{#    {{macros.field_data(game_data) | indent}}#}
-{#</div>#}
-{#{% endif %}#}
 <div class="catalog">
     {% call(datestamp) macros.pagination(datestamps, page) %}
     {{
