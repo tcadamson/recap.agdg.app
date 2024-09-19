@@ -5,11 +5,11 @@
 {% block content %}
 <h1 class="text-center">{{ self.title() }}</h1>
 <div class="catalog catalog-variant">
-    {% for year in bundles|map(attribute="year")|unique|reverse %}
+    {% for year, bundles in bundles|groupby("year")|reverse %}
     <section class="box box-variant box-container">
-        <h2 class="text-center">{{ year }} ({{ (bundles|selectattr("year", "==", year)|first)["game_count"] }} games):</h2>
+        <h2 class="text-center">{{ year }} ({{ (bundles|first)["game_count"] }} games):</h2>
         <div>
-            {% for month, bundles in bundles|selectattr("year", "==", year)|groupby("month") %}
+            {% for month, bundles in bundles|groupby("month") %}
             <div class="row-container">
                 <p>{{ month|month_text }}</p>
                 <p>
