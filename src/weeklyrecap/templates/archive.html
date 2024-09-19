@@ -7,7 +7,7 @@
 <div class="catalog catalog-variant">
     {% for year in bundles|map(attribute="year")|unique|reverse %}
     <section class="box box-variant box-container">
-        <h2 class="text-center">{{ year }} ({{ game_counts[loop.revindex0] }} games):</h2>
+        <h2 class="text-center">{{ year }} ({{ (bundles|selectattr("year", "==", year)|first)["game_count"] }} games):</h2>
         <div>
             {% for month, bundles in bundles|selectattr("year", "==", year)|groupby("month") %}
             <div class="row-container">

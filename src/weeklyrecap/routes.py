@@ -42,15 +42,15 @@ def index() -> str:  # noqa: D103
 def archive() -> str:  # noqa: D103
     return flask.render_template(
         "archive.html",
-        game_counts=database.get_game_counts(),
         bundles=[
             {
                 "datestamp": datestamp,
+                "game_count": game_count,
                 "year": common.datestamp_year(datestamp),
                 "month": common.datestamp_month(datestamp),
                 "week": common.datestamp_week(datestamp),
             }
-            for datestamp in database.get_datestamps()
+            for datestamp, game_count in database.get_archive_data()
         ],
     )
 
