@@ -1,7 +1,7 @@
 import calendar
 import datetime
 
-FIELDS = ["dev", "tools", "web"]
+KEYS = ["dev", "tools", "web"]
 
 
 def timestamp_to_datestamp(timestamp: float) -> int:  # noqa: D103

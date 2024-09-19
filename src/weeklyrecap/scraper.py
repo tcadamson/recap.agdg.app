@@ -157,12 +157,12 @@ def _scrape_thread_id(thread_id: int) -> None:
 
             game = database.get_game(title) or database.add_game(title)
 
-            for field in common.FIELDS:
-                if field_match := re.search(
-                    rf"(?i)(?:<br>)+{re.escape(field)}::((?:(?!::|<br>).)+?)(?=$|<br>)",
+            for key in common.KEYS:
+                if key_match := re.search(
+                    rf"(?i)(?:<br>)+{re.escape(key)}::((?:(?!::|<br>).)+?)(?=$|<br>)",
                     text,
                 ):
-                    setattr(game, field, field_match.group(1))
+                    setattr(game, key, key_match.group(1))
 
             if progress_match := re.search(r".+::(?:.*?(?:<br>)+)*(.+)$", text):
                 database.add_post(

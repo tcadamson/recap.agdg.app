@@ -19,7 +19,7 @@
     --gap-row: 1rem;
     --gap-search-bar: 1rem;
     --width-catalog-item: 26.6rem;
-    --width-catalog-field: 3.675rem;
+    --width-catalog-key: 3.675rem;
 }
 
 html {
@@ -171,8 +171,8 @@ ul, ol {
     height: calc(var(--width-catalog-item) / (16 / 9));
 }
 
-.catalog-field {
-    width: var(--width-catalog-field);
+.catalog-key {
+    width: var(--width-catalog-key);
 }
 
 .search-bar {
