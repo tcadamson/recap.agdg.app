@@ -122,6 +122,42 @@ def get_rankings_data() -> list[tuple[Game, int]]:  # noqa: D103
     ]
 
 
+def get_games_data(search: str | None = None) -> list[tuple[Game, Post]]:  # noqa: D103
+    random_post = sqlalchemy.select(
+        Post,
+        sqlalchemy.func.row_number()
+        .over(
+            partition_by=Post.game_id,
+            order_by=[Post.filename.is_(None), sqlalchemy.func.random()],
+        )
+        .label("row_number"),
+    ).subquery()
+    query = (
+        sqlalchemy.select(Game, sqlalchemy.orm.aliased(Post, random_post))
+        .join(
+            sqlalchemy.select(
+                Post.game_id,
+                sqlalchemy.func.max(Post.timestamp).label("max_timestamp"),
+            )
+            .group_by(Post.game_id)
+            .subquery()
+        )
+        .join(random_post)
+        .filter(random_post.c.row_number.is_(1))
+        .order_by(sqlalchemy.desc("max_timestamp"))
+    )
+
+    if search:
+        query = query.filter(
+            sqlalchemy.or_(
+                Game.title.ilike(f"%{search}%"),
+                *[getattr(Game, key).ilike(f"%{search}%") for key in common.GAME_KEYS],
+            )
+        )
+
+    return [row.tuple() for row in _session.execute(query)]
+
+
 def add_game(title: str) -> Game:  # noqa: D103
     _session.add(game := Game(title=title))
 

@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% import "macros.html" as macros %}
 
-{% set datestamps = rows|map(attribute="unix")|map("decode_unix")|unique|list %}
+{% set datestamps = bundles|map(attribute="datestamp")|unique|reverse|list %}
 
-{% block title %}{{ game_data["title"] }}{% endblock title %}
+{% block title %}{{ (bundles|first)["title"] }}{% endblock title %}
 
 {% block content %}
 <h1 class="text-center">{{ self.title() }}</h1>
@@ -11,9 +11,9 @@
     {% call(datestamp) macros.pagination(datestamps, page) %}
     {{
         macros.catalog_item(
-            rows|selectattr("unix", "matches_datestamp", datestamp)|reverse,
-            datestamp|semantic_datestamp,
-            url_for("view", _anchor=game_data["id"], datestamp=datestamp)
+            bundles|selectattr("datestamp", "==", datestamp)|list,
+            datestamp|datestamp_text,
+            url_for("view", _anchor=(bundles|first)["game_id"]|string, datestamp=datestamp)
         )|indent
     }}
     {% endcall %}

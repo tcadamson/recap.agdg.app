@@ -7,6 +7,20 @@ import werkzeug.exceptions
 from . import app, common, database
 
 
+def _get_page() -> int:
+    return flask.request.args.get("page", type=int, default=1)
+
+
+def _get_bundle(
+    game_: database.Game, post: database.Post, *excluded_keys: str
+) -> dict[str, object]:
+    return {
+        key: value
+        for key, value in (game_.serialized | post.serialized).items()
+        if key not in excluded_keys
+    }
+
+
 @app.template_filter()
 def datestamp_text(datestamp: int) -> str:  # noqa: D103
     return (
@@ -79,9 +93,26 @@ def view(_datestamp: int) -> str:  # noqa: D103
 
 @app.route("/games", methods=["GET", "POST"])
 def games() -> str:  # noqa: D103
-    return ""
+    search = flask.request.form.get("search", flask.request.args.get("search"))
+
+    return flask.render_template(
+        "games.html",
+        bundles=[
+            _get_bundle(game_, post, "progress")
+            for game_, post in database.get_games_data(search)
+        ],
+        page=_get_page(),
+        search=search,
+    )
 
 
-@app.route("/game/<int:game_id>")
-def game(_game_id: int) -> str:  # noqa: D103
-    return ""
+@app.route("/games/<int:game_id>")
+def game(game_id: int) -> str:  # noqa: D103
+    if not (game_ := database.get_game(game_id)):
+        flask.abort(404)
+
+    return flask.render_template(
+        "game.html",
+        bundles=[_get_bundle(game_, post, *common.GAME_KEYS) for post in game_.posts],
+        page=_get_page(),
+    )

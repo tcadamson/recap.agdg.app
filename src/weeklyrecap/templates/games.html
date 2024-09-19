@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% import "macros.html" as macros %}
 
-{% set titles = rows|map(attribute="title")|list %}
+{% set titles = bundles|map(attribute="title")|unique|list %}
 
 {% block title %}Games{% endblock title %}
 
@@ -16,7 +16,8 @@
 </div>
 <div class="catalog">
     {% call(title) macros.pagination(titles, page) %}
-    {{ macros.catalog_item_common(rows, title) }}
+    {% set bundles = bundles|selectattr("title", "==", title)|list %}
+    {{ macros.catalog_item(bundles, title, url_for("game", game_id=(bundles|first)["game_id"]))|indent }}
     {% endcall %}
 </div>
 {% endblock content %}

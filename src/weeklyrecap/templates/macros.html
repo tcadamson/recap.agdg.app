@@ -1,23 +1,24 @@
 {% set per_page = 24 %}
 
-{% macro pagination(rows, page) %}
-{% for row in (rows|batch(per_page)|list)[page - 1] %}
-{{ caller(row) }}
+{% macro pagination(items, page) %}
+{% for item in (items|batch(per_page)|list)[page - 1] %}
+{{ caller(item) }}
 {%- endfor %}
 {% endmacro %}
 
-{% macro pagination_drawer(rows, page, search=None, delta=4) %}
-{% set pages = rows|batch(per_page)|list|length %}
+{% macro pagination_drawer(items, page, search=None) %}
+{% set pages = items|batch(per_page)|list|length %}
 {% if pages > 1 %}
 <ol id="pagination" class="list-container">
+    {% set delta = 4 %}
     {% for i in range([1, page - delta]|max, [pages, page + delta]|min + 1) %}
     <li>
         {% if i == page %}
         <span class="pagination-active">
-            {{ pagination_drawer_link(i, i, search) }}
+            {{ pagination_drawer_link(i, search) }}
         </span>
         {% else %}
-        {{ pagination_drawer_link(i, i, search) }}
+        {{ pagination_drawer_link(i, search) }}
         {% endif %}
     </li>
     {% endfor %}
@@ -25,16 +26,16 @@
 {% endif %}
 {% endmacro %}
 
-{% macro pagination_drawer_link(text, page, search) %}
-<h2><a href="{{ url_for(request.endpoint, page=page, search=search, **request.view_args) }}">{{ text }}</a></h2>
+{% macro pagination_drawer_link(page, search) %}
+<h2><a href="{{ url_for(request.endpoint, page=page, search=search, **request.view_args) }}">{{ page }}</a></h2>
 {%- endmacro %}
 
-{% macro media(row, class_prefix) %}
-{% set url = url_for("static", filename=("%s/%s" % (row["unix"]|decode_unix, row["unix"] ~ row["ext"])) if row["ext"] else "default.png") %}
+{% macro media(bundle) %}
+{% set filename = "%(datestamp)s/%(filename)s" % bundle if bundle["filename"] else "default.png" %}
+{% set url = url_for("static", filename=filename) %}
 <a class="media-container" href="{{ url }}">
-    {% set class = "media" %}
-    {% set class = "%s %s-media" % (class, class_prefix) if class_prefix else class %}
-    {% if row["ext"] == ".webm" %}
+    {% set class = "media catalog-media" %}
+    {% if filename.endswith(".webm") %}
     <video class="{{ class }}" src="{{ url }}" autoplay muted loop></video>
     {% else %}
     <img class="{{ class }}" src="{{ url }}" alt="">
@@ -42,36 +43,31 @@
 </a>
 {%- endmacro %}
 
-{% macro catalog_item(rows, title, title_url) %}
-{% set rows = rows|list %}
-<article id="{{ rows|map(attribute="id")|first }}" class="box-container">
-    {% for row in rows %}
+{% macro catalog_item(bundles, title, title_url) %}
+<article id="{{ (bundles|first)["game_id"] }}" class="box-container">
+    {% for bundle in bundles %}
     {% if loop.first %}
     <section class="box box-container">
         <h2 class="text-center"><a href="{{ title_url }}">{{ title }}</a></h2>
-        {% if row is nonempty_key_data %}
+        {% set keys = GAME_KEYS|select("in", bundle)|list %}
+        {% if keys %}
         <table>
-            {% for key in GAME_KEYS if row[key] %}
+            {% for key in keys %}
             <tr>
                 <td class="catalog-key"><p>{{ key|capitalize }}:</p></td>
-                <td><p>{{ row[key]|urlize }}</p></td>
+                <td><p>{{ bundle[key]|safe|urlize }}</p></td>
             </tr>
             {% endfor %}
         </table>
         {% endif %}
     </section>
     {% endif %}
-    {{ media(row, "catalog")|indent }}
-    {% if row["progress"] %}
+    {{ media(bundle)|indent }}
+    {% if bundle["progress"] %}
     <div class="box box-variant">
-        <p>{{ row["progress"]|urlize }}</p>
+        <p>{{ bundle["progress"]|safe|urlize }}</p>
     </div>
     {% endif %}
     {% endfor %}
 </article>
-{%- endmacro %}
-
-{% macro catalog_item_common(rows, title) %}
-{% set rows = rows|selectattr("title", "==", title)|list %}
-{{ catalog_item(rows, title, url_for("game", game_id=rows|map(attribute="id")|first))|indent }}
 {%- endmacro %}
