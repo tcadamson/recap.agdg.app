@@ -2,13 +2,13 @@
 
 {% import "macros.html" as macros %}
 
-{% block title %}{{datestamp | semantic_datestamp}}{% endblock title %}
+{% block title %}{{ datestamp|semantic_datestamp }}{% endblock title %}
 
 {% block content %}
-<h1 class="text-center">{{self.title()}}</h1>
+<h1 class="text-center">{{ self.title() }}</h1>
 <div class="catalog">
-    {% for title in rows | map(attribute = "title") | unique %}
-    {{macros.catalog_entry_common(rows, title)}}
+    {% for title in rows|map(attribute="title")|unique %}
+    {{ macros.catalog_entry_common(rows, title) }}
     {% endfor %}
 </div>
 {% endblock content %}

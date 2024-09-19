@@ -1,25 +1,24 @@
 {% extends "base.html" %}
-
 {% import "macros.html" as macros %}
 
-{% set titles = rows | map(attribute = "title") | list %}
+{% set titles = rows|map(attribute="title")|list %}
 
 {% block title %}Games{% endblock title %}
 
 {% block content %}
 <div class="box-container">
-    <h1 class="text-center">{{self.title()}}</h1>
-    <form action="{{url_for("games")}}" method="POST">
+    <h1 class="text-center">{{ self.title() }}</h1>
+    <form action="{{ url_for("games") }}" method="POST">
         <h2>
-            <label><input class="search-bar" name="search" placeholder="Search..." value="{{search if search}}"></label>
+            <label><input class="search-bar" name="search" placeholder="Search..." value="{{ search if search }}"></label>
         </h2>
     </form>
 </div>
 <div class="catalog">
     {% call(title) macros.pagination(titles, page) %}
-    {{macros.catalog_entry_common(rows, title)}}
+    {{ macros.catalog_entry_common(rows, title) }}
     {% endcall %}
 </div>
 {% endblock content %}
 
-{% block pagination_drawer %}{{macros.pagination_drawer(titles, page, search)}}{% endblock pagination_drawer %}
+{% block pagination_drawer %}{{ macros.pagination_drawer(titles, page, search) }}{% endblock pagination_drawer %}

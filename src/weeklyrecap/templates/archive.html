@@ -3,19 +3,19 @@
 {% block title %}Archive{% endblock title %}
 
 {% block content %}
-<h1 class="text-center">{{self.title()}}</h1>
+<h1 class="text-center">{{ self.title() }}</h1>
 <div class="catalog catalog-variant">
-    {% for year in bundles | map(attribute="year") | unique | reverse %}
+    {% for year in bundles|map(attribute="year")|unique|reverse %}
     <section class="box box-variant box-container">
-        <h2 class="text-center">{{year}} ({{game_counts[loop.revindex0]}} games):</h2>
+        <h2 class="text-center">{{ year }} ({{ game_counts[loop.revindex0] }} games):</h2>
         <div>
-            {% for month, bundles in bundles | selectattr("year", "==", year) | groupby("month") %}
+            {% for month, bundles in bundles|selectattr("year", "==", year)|groupby("month") %}
             <div class="row-container">
-                <p>{{month | month_text}}</p>
+                <p>{{ month|month_text }}</p>
                 <p>
                     {% for bundle in bundles %}
-                    <a href="{{url_for("view", datestamp = bundle["datestamp"])}}">{{bundle["week"]}}</a>
-                    {{-" /" if not loop.last}}
+                    <a href="{{ url_for("view", datestamp=bundle["datestamp"]) }}">{{ bundle["week"] }}</a>
+                    {{- " /" if not loop.last }}
                     {% endfor %}
                 </p>
             </div>
