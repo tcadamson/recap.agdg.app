@@ -152,17 +152,17 @@ def _scrape_thread_id(thread_id: int) -> None:
 
             title, title_change, text = text_match.groups()
 
-            if title_change and not database.get_game(title_change):
-                title = title_change
+            if game_id := database.get_game_id(
+                title := title_change
+                if title_change and not database.get_game_id(title_change)
+                else title
+            ):
+                game = database.get_game(game_id)
+            else:
+                game = database.add_game(title)
 
-            game = database.get_game(title) or database.add_game(title)
-
-            for key in common.GAME_KEYS:
-                if key_match := re.search(
-                    rf"(?i)(?:<br>)+{re.escape(key)}::((?:(?!::|<br>).)+?)(?=$|<br>)",
-                    text,
-                ):
-                    setattr(game, key, key_match.group(1))
+            if not game:
+                continue
 
             if progress_match := re.search(r".+::(?:.*?(?:<br>)+)*(.+)$", text):
                 database.add_post(
@@ -171,6 +171,13 @@ def _scrape_thread_id(thread_id: int) -> None:
                     f"{post["tim"]}{post["ext"]}" if "tim" in post else None,
                     progress_match.group(1),
                 )
+
+            for key in common.GAME_KEYS:
+                if key_match := re.search(
+                    rf"(?i)(?:<br>)+{re.escape(key)}::((?:(?!::|<br>).)+?)(?=$|<br>)",
+                    text,
+                ):
+                    setattr(game, key, key_match.group(1))
 
         database.commit_session()
 

@@ -76,8 +76,12 @@ class Post(_Base):  # noqa: D101
         return common.datestamp_week(self.datestamp)
 
 
-def get_game(title: str) -> Game | None:  # noqa: D103
-    return _session.scalar(sqlalchemy.select(Game).filter_by(title=title))
+def get_game(game_id: int) -> Game | None:  # noqa: D103
+    return _session.scalar(sqlalchemy.select(Game).filter_by(game_id=game_id))
+
+
+def get_game_id(title: str) -> int | None:  # noqa: D103
+    return _session.scalar(sqlalchemy.select(Game.game_id).filter_by(title=title))
 
 
 def get_archive_data() -> list[tuple[int, int]]:  # noqa: D103
