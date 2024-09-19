@@ -44,7 +44,7 @@
 
 {% macro key_data(row) %}
 <table>
-    {% for key in ["dev", "tools", "web"] if row[key] %}
+    {% for key in GAME_KEYS if row[key] %}
     <tr>
         <td class="catalog-key"><p>{{ key|capitalize }}:</p></td>
         <td><p>{{ row[key]|urlize }}</p></td>

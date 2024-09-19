@@ -157,7 +157,7 @@ def _scrape_thread_id(thread_id: int) -> None:
 
             game = database.get_game(title) or database.add_game(title)
 
-            for key in common.KEYS:
+            for key in common.GAME_KEYS:
                 if key_match := re.search(
                     rf"(?i)(?:<br>)+{re.escape(key)}::((?:(?!::|<br>).)+?)(?=$|<br>)",
                     text,

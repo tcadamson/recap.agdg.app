@@ -1,7 +1,7 @@
 import calendar
 import datetime
 
-KEYS = ["dev", "tools", "web"]
+GAME_KEYS = ["dev", "tools", "web"]
 
 
 def timestamp_to_datestamp(timestamp: float) -> int:  # noqa: D103

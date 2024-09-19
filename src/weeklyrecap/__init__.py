@@ -4,6 +4,8 @@ import flask
 import pydantic
 import pydantic_settings
 
+from . import common
+
 app = flask.Flask(
     __name__,
     instance_path=(
@@ -19,6 +21,7 @@ app.jinja_options = {
     "trim_blocks": True,
     "lstrip_blocks": True,
 }
+app.jinja_env.globals["GAME_KEYS"] = common.GAME_KEYS
 
 
 class _Config(pydantic_settings.BaseSettings):
