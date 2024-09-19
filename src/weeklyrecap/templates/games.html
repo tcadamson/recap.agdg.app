@@ -16,7 +16,7 @@
 </div>
 <div class="catalog">
     {% call(title) macros.pagination(titles, page) %}
-    {{ macros.catalog_entry_common(rows, title) }}
+    {{ macros.catalog_item_common(rows, title) }}
     {% endcall %}
 </div>
 {% endblock content %}

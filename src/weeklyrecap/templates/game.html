@@ -15,7 +15,7 @@
 <div class="catalog">
     {% call(datestamp) macros.pagination(datestamps, page) %}
     {{
-        macros.catalog_entry(
+        macros.catalog_item(
             rows|selectattr("unix", "matches_datestamp", datestamp)|reverse,
             datestamp|semantic_datestamp,
             url_for("view", _anchor=game_data["id"], datestamp=datestamp)

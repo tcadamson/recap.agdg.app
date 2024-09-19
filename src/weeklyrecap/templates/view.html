@@ -8,7 +8,7 @@
 <h1 class="text-center">{{ self.title() }}</h1>
 <div class="catalog">
     {% for title in rows|map(attribute="title")|unique %}
-    {{ macros.catalog_entry_common(rows, title) }}
+    {{ macros.catalog_item_common(rows, title) }}
     {% endfor %}
 </div>
 {% endblock content %}

@@ -53,7 +53,7 @@
 </table>
 {%- endmacro %}
 
-{% macro catalog_entry(rows, title, title_url) %}
+{% macro catalog_item(rows, title, title_url) %}
 {% set rows = rows|list %}
 <article id="{{ rows|map(attribute="id")|first }}" class="box-container">
     {% for row in rows %}
@@ -75,7 +75,7 @@
 </article>
 {%- endmacro %}
 
-{% macro catalog_entry_common(rows, title) %}
+{% macro catalog_item_common(rows, title) %}
 {% set rows = rows|selectattr("title", "==", title)|list %}
-{{ catalog_entry(rows, title, url_for("game", game_id=rows|map(attribute="id")|first))|indent }}
+{{ catalog_item(rows, title, url_for("game", game_id=rows|map(attribute="id")|first))|indent }}
 {%- endmacro %}
