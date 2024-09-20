@@ -12,11 +12,12 @@ def _get_page() -> int:
 
 
 def _get_bundle(
-    game_: database.Game, post: database.Post, *excluded_keys: str
+    data: tuple[database.Game, database.Post], *excluded_keys: str
 ) -> dict[str, object]:
     return {
         key: value
-        for key, value in (game_.serialized | post.serialized).items()
+        for instance in data
+        for key, value in instance.serialized.items()
         if key not in excluded_keys
     }
 
@@ -98,8 +99,7 @@ def games() -> str:  # noqa: D103
     return flask.render_template(
         "games.html",
         bundles=[
-            _get_bundle(game_, post, "progress")
-            for game_, post in database.get_games_data(search)
+            _get_bundle(data, "progress") for data in database.get_games_data(search)
         ],
         page=_get_page(),
         search=search,
@@ -113,6 +113,6 @@ def game(game_id: int) -> str:  # noqa: D103
 
     return flask.render_template(
         "game.html",
-        bundles=[_get_bundle(game_, post, *common.GAME_KEYS) for post in game_.posts],
+        bundles=[_get_bundle((game_, post), *common.GAME_KEYS) for post in game_.posts],
         page=_get_page(),
     )
