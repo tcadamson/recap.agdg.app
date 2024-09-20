@@ -150,11 +150,11 @@ def _scrape_thread_id(thread_id: int) -> None:
             ):
                 continue
 
-            title, title_change, text = text_match.groups()
+            title, title_update, text = text_match.groups()
 
             if game_id := database.get_game_id(
-                title := title_change
-                if title_change and not database.get_game_id(title_change)
+                title := title_update
+                if title_update and not database.get_game_id(title_update)
                 else title
             ):
                 game = database.get_game(game_id)
