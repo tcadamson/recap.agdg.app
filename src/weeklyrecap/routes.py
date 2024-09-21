@@ -44,9 +44,9 @@ def error(exception: werkzeug.exceptions.HTTPException) -> tuple[str, int]:  # n
 
 
 @app.route("/")
-def index() -> str:  # noqa: D103
+def home() -> str:  # noqa: D103
     return flask.render_template(
-        "index.html",
+        "home.html",
         datestamp=common.timestamp_to_datestamp(
             datetime.datetime.now(datetime.UTC).timestamp()
         ),
