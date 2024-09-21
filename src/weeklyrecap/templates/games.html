@@ -7,7 +7,7 @@
 
 {% block content %}
 <div class="box-container">
-    <h1 class="text-center">{{ self.title() }}</h1>
+    <h1 class="text-center">{{ self.title() }} ({{ bundles|length }})</h1>
     <form action="{{ url_for("games") }}" method="POST">
         <h2>
             <label><input class="search-bar" name="search" placeholder="Search..." value="{{ search if search }}"></label>
