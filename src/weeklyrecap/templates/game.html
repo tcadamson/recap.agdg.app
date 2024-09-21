@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% import "macros.html" as macros %}
 
-{% set datestamps = bundles|map(attribute="datestamp")|unique|reverse|list %}
+{% set datestamps = bundles|map(attribute="datestamp")|unique|reverse %}
 
 {% block title %}{{ (bundles|first)["title"] }}{% endblock title %}
 
