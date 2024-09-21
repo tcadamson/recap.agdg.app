@@ -55,7 +55,7 @@
             {% for key in keys %}
             <tr>
                 <td class="catalog-key"><p>{{ key|capitalize }}:</p></td>
-                <td><p>{{ bundle[key]|safe|urlize }}</p></td>
+                <td><p>{{ bundle[key]|urlize|safe }}</p></td>
             </tr>
             {% endfor %}
         </table>
@@ -65,7 +65,7 @@
     {{ media(bundle)|indent }}
     {% if bundle["progress"] %}
     <div class="box box-variant">
-        <p>{{ bundle["progress"]|safe|urlize }}</p>
+        <p>{{ bundle["progress"]|urlize|safe }}</p>
     </div>
     {% endif %}
     {% endfor %}
