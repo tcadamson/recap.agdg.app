@@ -158,6 +158,18 @@ def get_games_data(search: str | None = None) -> list[tuple[Game, Post]]:  # noq
     return [row.tuple() for row in _session.execute(query)]
 
 
+def get_view_data(datestamp: int) -> list[tuple[Game, Post]]:  # noqa: D103
+    return [
+        row.tuple()
+        for row in _session.execute(
+            sqlalchemy.select(Game, Post)
+            .join(Game.posts)
+            .filter(Post.datestamp.is_(datestamp))
+            .order_by(Post.timestamp)
+        )
+    ]
+
+
 def add_game(title: str) -> Game:  # noqa: D103
     _session.add(game := Game(title=title))
 

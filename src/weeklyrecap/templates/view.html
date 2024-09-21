@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-
 {% import "macros.html" as macros %}
 
-{% block title %}{{ datestamp|semantic_datestamp }}{% endblock title %}
+{% block title %}{{ (bundles|first)["datestamp"]|datestamp_text }}{% endblock title %}
 
 {% block content %}
 <h1 class="text-center">{{ self.title() }}</h1>
 <div class="catalog">
-    {% for title in rows|map(attribute="title")|unique %}
-    {{ macros.catalog_item_common(rows, title) }}
+    {% for title in bundles|map(attribute="title")|unique %}
+    {% set bundles = bundles|selectattr("title", "==", title)|list %}
+    {{ macros.catalog_item(bundles, title, url_for("game", game_id=(bundles|first)["game_id"]))|indent }}
     {% endfor %}
 </div>
 {% endblock content %}
