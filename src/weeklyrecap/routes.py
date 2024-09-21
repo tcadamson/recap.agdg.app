@@ -89,11 +89,9 @@ def rankings() -> str:  # noqa: D103
 
 @app.route("/view/<int:datestamp>")
 def view(datestamp: int) -> str:  # noqa: D103
-    if not (view_data := database.get_view_data(datestamp)):
-        flask.abort(404)
-
     return flask.render_template(
-        "view.html", bundles=[_get_bundle(data) for data in view_data]
+        "view.html",
+        bundles=[_get_bundle(data) for data in database.get_view_data(datestamp)],
     )
 
 
