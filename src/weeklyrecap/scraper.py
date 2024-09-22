@@ -142,7 +142,7 @@ def _scrape_thread_id(thread_id: int) -> None:
 
             if not (
                 text_match := re.search(
-                    r"::((?:(?!->|<br>).)+?)(?:->((?:(?!<br>).)+?))?::(.+$)",
+                    r"::((?:(?!::|<br>).)+?)(?:::((?:(?!<br>).)+?))?::(.+$)",
                     _normalize_comment(comment),
                 )
             ):
