@@ -30,8 +30,7 @@ def _get_bundle(
 def datestamp_text(datestamp: int) -> str:  # noqa: D103
     return (
         f"{month_text(common.datestamp_month(datestamp))} "
-        f"{common.datestamp_year(datestamp)}: Week "
-        f"{common.datestamp_week(datestamp)}"
+        f"{common.datestamp_year(datestamp)} (Week {common.datestamp_week(datestamp)})"
     )
 
 
