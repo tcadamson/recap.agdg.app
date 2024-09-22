@@ -55,7 +55,7 @@
             {% for key in keys %}
             <tr>
                 <td class="catalog-key"><p>{{ key|capitalize }}:</p></td>
-                <td><p>{{ bundle[key]|urlize|safe }}</p></td>
+                <td><p>{{ (bundle[key].split()|join("<br>") if key == "web" else bundle[key])|urlize|safe }}</p></td>
             </tr>
             {% endfor %}
         </table>
