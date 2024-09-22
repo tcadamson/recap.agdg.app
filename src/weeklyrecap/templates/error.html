@@ -3,5 +3,5 @@
 {% block title %}Error: {{ exception["code"] }}{% endblock title %}
 
 {% block content %}
-<h1 class="text-center">{{ "%s: %s" % (exception["code"], exception["name"]|capitalize) }}</h1>
+<h1 class="text-center">{{ "%s: %s" % (exception["code"], exception["name"]|title) }}</h1>
 {% endblock content %}
