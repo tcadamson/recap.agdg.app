@@ -1,10 +1,14 @@
 import calendar
 import datetime
+import urllib.parse
 
 import flask
+import urlextract  # type: ignore[import-untyped]
 import werkzeug.exceptions
 
 from . import app, common, database
+
+_urlextract = urlextract.URLExtract()
 
 
 def _get_page() -> int:
@@ -34,6 +38,21 @@ def datestamp_text(datestamp: int) -> str:  # noqa: D103
 @app.template_filter()
 def month_text(month: int) -> str:  # noqa: D103
     return calendar.month_name[month]
+
+
+@app.template_filter()
+def urlize(text: str) -> str:  # noqa: D103
+    for url in _urlextract.find_urls(text):
+        normalized = common.normalize_text(
+            url, [r"^https?://(.+)", r"www\.(.+)", r"(.+)/$"]
+        )
+        scheme = urllib.parse.urlparse(url).scheme or "https"
+        text = text.replace(
+            url,
+            f'<a href="{scheme}://{normalized}">{normalized}</a>',
+        )
+
+    return text
 
 
 @app.errorhandler(werkzeug.exceptions.HTTPException)

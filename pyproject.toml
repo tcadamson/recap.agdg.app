@@ -12,6 +12,7 @@ dependencies = [
     "python-dotenv",
     "redis",
     "sqlalchemy",
+    "urlextract",
 ]
 
 [project.optional-dependencies]

@@ -1,5 +1,6 @@
 import calendar
 import datetime
+import re
 
 GAME_KEYS = ["dev", "tools", "web"]
 
@@ -37,3 +38,10 @@ def datestamp_month(datestamp: int) -> int:  # noqa: D103
 
 def datestamp_week(datestamp: int) -> int:  # noqa: D103
     return datestamp % 10
+
+
+def normalize_text(text: str, normalize_patterns: list[str]) -> str:  # noqa: D103
+    for pattern in normalize_patterns:
+        text = re.sub(pattern, r"\1", text)
+
+    return text

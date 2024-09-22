@@ -75,18 +75,16 @@ def _post_has_subject(post: _Post, subject: str) -> bool:
 
 
 def _normalize_comment(comment: str) -> str:
-    comment = html.unescape(comment)
-
-    for normalize_pattern in [
-        r"\\(\S)",
-        r"<span.+?>(.+?)</span>",
-        r"\s?(::):*\s?",
-        r"\s?(->)\s?",
-        r"\s?(<br>)\s?",
-    ]:
-        comment = re.sub(normalize_pattern, r"\1", comment)
-
-    return comment
+    return common.normalize_text(
+        html.unescape(comment),
+        [
+            r"\\(\S)",
+            r"<span.+?>(.+?)</span>",
+            r"\s?(::):*\s?",
+            r"\s?(->)\s?",
+            r"\s?(<br>)\s?",
+        ],
+    )
 
 
 def _request_json(endpoint: _Endpoint | str) -> object:
