@@ -25,7 +25,7 @@ def timestamp_to_datestamp(timestamp: float) -> int:  # noqa: D103
         week = 1
         monday_date += week_delta
 
-    return int(f"{monday_date.strftime("%y%m")}{week}")
+    return int(f"{monday_date.strftime('%y%m')}{week}")
 
 
 def datestamp_year(datestamp: int) -> int:  # noqa: D103

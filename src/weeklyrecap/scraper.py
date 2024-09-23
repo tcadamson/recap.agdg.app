@@ -161,7 +161,7 @@ def _scrape_thread_id(thread_id: int) -> None:
 
             for key, value in re.findall(
                 key_pattern
-                := rf"(?i)(?:<br>)+({"|".join(common.GAME_KEYS)})::((?:(?!<br>).)+)",
+                := rf"(?i)(?:<br>)+({'|'.join(common.GAME_KEYS)})::((?:(?!<br>).)+)",
                 text,
             ):
                 setattr(game, key, value)
@@ -173,7 +173,7 @@ def _scrape_thread_id(thread_id: int) -> None:
                 database.add_post(
                     game.game_id,
                     post["time"],
-                    f"{post["tim"]}{post["ext"]}" if "tim" in post else None,
+                    f"{post['tim']}{post['ext']}" if "tim" in post else None,
                     progress_match.group(1),
                 )
 
