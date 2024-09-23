@@ -11,6 +11,7 @@ dependencies = [
     "pydantic-settings",
     "python-dotenv",
     "redis",
+    "requests",
     "sqlalchemy",
     "urlextract",
 ]
