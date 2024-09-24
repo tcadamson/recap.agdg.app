@@ -1,6 +1,6 @@
 import pathlib
 
-import flask
+import flask.cli
 import pydantic
 import pydantic_settings
 
@@ -27,6 +27,8 @@ class _Config(pydantic_settings.BaseSettings):
     SQLALCHEMY_DATABASE_URI: str
     CDN_DOMAIN: str
 
+
+flask.cli.load_dotenv()
 
 try:
     config = _Config()
