@@ -21,11 +21,11 @@ app.jinja_options = {
     "trim_blocks": True,
     "lstrip_blocks": True,
 }
-app.jinja_env.globals["GAME_KEYS"] = common.GAME_KEYS
 
 
 class _Config(pydantic_settings.BaseSettings):
     SQLALCHEMY_DATABASE_URI: str
+    CDN_DOMAIN: str
 
 
 try:
@@ -33,6 +33,8 @@ try:
 except pydantic.ValidationError as e:
     app.logger.critical(e)
     raise
+
+app.jinja_env.globals.update(GAME_KEYS=common.GAME_KEYS, CDN_DOMAIN=config.CDN_DOMAIN)
 
 if not instance_path.exists():
     instance_path.mkdir()
