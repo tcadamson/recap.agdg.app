@@ -25,7 +25,7 @@ app.jinja_env.globals["GAME_KEYS"] = common.GAME_KEYS
 
 
 class _Config(pydantic_settings.BaseSettings):
-    sqlalchemy_database_uri: str
+    SQLALCHEMY_DATABASE_URI: str
 
 
 try:

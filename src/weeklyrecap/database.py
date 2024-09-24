@@ -12,7 +12,7 @@ _session = sqlalchemy.orm.scoped_session(
     sqlalchemy.orm.sessionmaker(
         autocommit=False,
         autoflush=False,
-        bind=sqlalchemy.create_engine(config.sqlalchemy_database_uri),
+        bind=sqlalchemy.create_engine(config.SQLALCHEMY_DATABASE_URI),
     )
 )
 
