@@ -4,17 +4,19 @@ import html
 import re
 import typing
 
+import boto3  # type: ignore[import-untyped]
+import botocore.exceptions
 import redis
 import requests
 
-from . import app, common, database
+from . import app, common, config, database
 
 
 class _Endpoint(enum.StrEnum):
     CATALOG = "https://a.4cdn.org/vg/catalog.json"
     ARCHIVE = "https://a.4cdn.org/vg/archive.json"
     THREAD = "https://a.4cdn.org/vg/thread/%d.json"
-    MEDIA = "https://i.4cdn.org/vg/%d%s"
+    MEDIA = "https://i.4cdn.org/vg/%s"
 
 
 class _Post(typing.TypedDict):
@@ -83,6 +85,30 @@ def _normalize_comment(comment: str) -> str:
             r"\s?(<br>)\s?",
         ],
     )
+
+
+def _s3_upload(datestamp: int, filename: str) -> bool:
+    try:
+        _s3_client = boto3.client("s3")
+    except botocore.exceptions.ClientError as e:
+        app.logger.warning("S3 client unavailable: %r", e)
+
+        return False
+
+    if response := _request(endpoint := _Endpoint.MEDIA % filename):
+        try:
+            _s3_client.put_object(
+                Bucket=config.AWS_CDN_BUCKET,
+                Key=f"{datestamp}/{filename}",
+                Body=response.content,
+                ContentType=response.headers.get("Content-Type"),
+            )
+        except botocore.exceptions.ClientError as e:
+            app.logger.warning("S3 upload failed for %s: %r", endpoint, e)
+        else:
+            return True
+
+    return False
 
 
 def _request(endpoint: _Endpoint | str) -> requests.Response | None:
@@ -186,9 +212,14 @@ def _scrape_thread_id(thread_id: int) -> None:
                 database.add_post(
                     game.game_id,
                     timestamp,
-                    f"{post['tim']}{post['ext']}" if "tim" in post else None,
-                    progress_match.group(1),
+                    filename := f"{post['tim']}{post['ext']}"
+                    if "tim" in post
+                    else None,
+                    progress_match[1],
                 )
+
+                if filename:
+                    _s3_upload(common.timestamp_to_datestamp(timestamp), filename)
 
         database.commit_session()
 
