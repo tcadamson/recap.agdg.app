@@ -49,6 +49,7 @@ class Game(_Base):  # noqa: D101
 
 class Post(_Base):  # noqa: D101
     __tablename__ = "post"
+    __tableargs__ = sqlalchemy.UniqueConstraint("game_id", "timestamp")
 
     post_id: sqlalchemy.orm.Mapped[_primary_key]
     game_id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(

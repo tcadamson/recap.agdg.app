@@ -175,13 +175,17 @@ def _scrape_thread_id(thread_id: int) -> None:
             ):
                 setattr(game, key, value)
 
-            if progress_match := re.search(
-                r"(?:.+::(?:.*?<br>)?)?(?:<br>)*(.+)$",
-                re.split(key_pattern, text)[-1],
+            if (
+                progress_match := re.search(
+                    r"(?:.+::(?:.*?<br>)?)?(?:<br>)*(.+)$",
+                    re.split(key_pattern, text)[-1],
+                )
+            ) and (timestamp := post["time"]) not in (
+                post_.timestamp for post_ in game.posts
             ):
                 database.add_post(
                     game.game_id,
-                    post["time"],
+                    timestamp,
                     f"{post['tim']}{post['ext']}" if "tim" in post else None,
                     progress_match.group(1),
                 )
