@@ -26,6 +26,7 @@ app.jinja_options = {
 class _Config(pydantic_settings.BaseSettings):
     SQLALCHEMY_DATABASE_URI: str
     AWS_CDN_DOMAIN: str
+    AWS_CDN_BUCKET: str
 
 
 flask.cli.load_dotenv()
