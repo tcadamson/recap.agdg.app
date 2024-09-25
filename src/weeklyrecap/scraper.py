@@ -85,13 +85,17 @@ def _normalize_comment(comment: str) -> str:
     )
 
 
-def _request_json(endpoint: _Endpoint | str) -> object:
+def _request(endpoint: _Endpoint | str) -> requests.Response | None:
     try:
-        return typing.cast(object, requests.get(endpoint, timeout=10).json())
+        return requests.get(endpoint, timeout=10)
     except requests.RequestException as e:
         app.logger.warning("Request failed for %s: %r", endpoint, e)
 
     return None
+
+
+def _request_json(endpoint: _Endpoint | str) -> object:
+    return response.json() if (response := _request(endpoint)) else None
 
 
 def _request_thread_ids(subject: str) -> list[int]:
