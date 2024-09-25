@@ -7,7 +7,8 @@
 <div class="catalog catalog-variant">
     {% for year, bundles in bundles|groupby("year")|reverse %}
     <section class="box box-variant box-container">
-        <h2 class="text-center">{{ year }} ({{ (bundles|first)["game_count"] }} Games):</h2>
+        {% set game_count = (bundles|first)["game_count"] %}
+        <h2 class="text-center">{{ year }} ({{ game_count }} Game{{ "s" if game_count > 1 else "" }}):</h2>
         <div>
             {% for month, bundles in bundles|groupby("month") %}
             <div class="row-container">
