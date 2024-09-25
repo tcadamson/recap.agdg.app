@@ -9,8 +9,6 @@ import requests
 
 from . import app, common, database
 
-_redis_client = redis.Redis()
-
 
 class _Endpoint(enum.StrEnum):
     CATALOG = "https://a.4cdn.org/vg/catalog.json"
@@ -110,6 +108,13 @@ def _request_thread_ids(subject: str) -> list[int]:
         ]
 
     if _is_archive(archive):
+        _redis_client = redis.Redis()
+
+        try:
+            _redis_client.ping()
+        except redis.RedisError as e:
+            app.logger.warning("Redis client unavailable: %r", e)
+
         with contextlib.suppress(redis.RedisError):
             for thread_id in map(int, _redis_client.scan_iter()):
                 if thread_id in archive:
@@ -182,10 +187,5 @@ def _scrape_thread_id(thread_id: int) -> None:
 
 @app.cli.command("scrape")
 def scrape() -> None:  # noqa: D103
-    try:
-        _redis_client.ping()
-    except redis.RedisError as e:
-        app.logger.warning("Redis server unavailable: %r", e)
-
     for thread_id in _request_thread_ids("agdg"):
         _scrape_thread_id(thread_id)
