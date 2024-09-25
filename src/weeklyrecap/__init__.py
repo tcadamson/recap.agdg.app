@@ -25,7 +25,7 @@ app.jinja_options = {
 
 class _Config(pydantic_settings.BaseSettings):
     SQLALCHEMY_DATABASE_URI: str
-    CDN_DOMAIN: str
+    AWS_CDN_DOMAIN: str
 
 
 flask.cli.load_dotenv()
@@ -36,7 +36,9 @@ except pydantic.ValidationError as e:
     app.logger.critical(e)
     raise
 
-app.jinja_env.globals.update(GAME_KEYS=common.GAME_KEYS, CDN_DOMAIN=config.CDN_DOMAIN)
+app.jinja_env.globals.update(
+    GAME_KEYS=common.GAME_KEYS, AWS_CDN_DOMAIN=config.AWS_CDN_DOMAIN
+)
 
 if not instance_path.exists():
     instance_path.mkdir()
