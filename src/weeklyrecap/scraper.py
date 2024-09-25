@@ -9,7 +9,7 @@ import requests
 
 from . import app, common, database
 
-_redis_session = redis.Redis()
+_redis_client = redis.Redis()
 
 
 class _Endpoint(enum.StrEnum):
@@ -111,11 +111,11 @@ def _request_thread_ids(subject: str) -> list[int]:
 
     if _is_archive(archive):
         with contextlib.suppress(redis.RedisError):
-            for thread_id in map(int, _redis_session.scan_iter()):
+            for thread_id in map(int, _redis_client.scan_iter()):
                 if thread_id in archive:
                     archive.remove(thread_id)
                 else:
-                    _redis_session.delete(str(thread_id))
+                    _redis_client.delete(str(thread_id))
 
         for thread_id in archive:
             thread = _request_json(_Endpoint.THREAD % thread_id)
@@ -127,7 +127,7 @@ def _request_thread_ids(subject: str) -> list[int]:
                 continue
 
             with contextlib.suppress(redis.RedisError):
-                _redis_session.set(str(thread_id), "")
+                _redis_client.set(str(thread_id), "")
 
     return sorted(thread_ids)
 
@@ -183,7 +183,7 @@ def _scrape_thread_id(thread_id: int) -> None:
 @app.cli.command("scrape")
 def scrape() -> None:  # noqa: D103
     try:
-        _redis_session.ping()
+        _redis_client.ping()
     except redis.RedisError as e:
         app.logger.warning("Redis server unavailable: %r", e)
 
