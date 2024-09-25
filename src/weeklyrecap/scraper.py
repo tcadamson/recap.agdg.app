@@ -81,7 +81,6 @@ def _normalize_comment(comment: str) -> str:
             r"\\(\S)",
             r"<span.+?>(.+?)</span>",
             r"\s?(::):*\s?",
-            r"\s?(->)\s?",
             r"\s?(<br>)\s?",
         ],
     )
